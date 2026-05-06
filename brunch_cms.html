@@ -1,0 +1,1071 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>브런치 CMS</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@300;400;500;600;700&family=Noto+Sans+KR:wght@300;400;500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0b0b0e;--surface:#131318;--card:#1a1a22;--border:#2a2a38;--bd:#1f1f2c;--text:#ddd8cc;--muted:#7a7890;--dim:#4a4a60;--radius:6px;}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:'Noto Serif KR',serif;font-size:15px;line-height:1.8;}
+button{font-family:'Noto Sans KR',sans-serif;cursor:pointer;}
+input,textarea,select{font-family:'Noto Sans KR',sans-serif;background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;color:var(--text);font-size:13px;outline:none;transition:border-color .2s;width:100%;}
+input:focus,textarea:focus,select:focus{border-color:var(--muted);}
+textarea{resize:vertical;min-height:80px;line-height:1.7;}
+select{cursor:pointer;}
+
+/* HEADER */
+.header{padding:28px 40px 0;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:300;}
+.header-inner{max-width:1100px;margin:0 auto;}
+.header-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:16px;}
+.header-label{font-size:11px;letter-spacing:.18em;color:var(--dim);text-transform:uppercase;margin-bottom:5px;}
+.header-title{font-size:21px;font-weight:600;letter-spacing:-.02em;}
+.header-btns{display:flex;gap:8px;flex-wrap:wrap;padding-top:2px;}
+.hbtn{font-size:11px;padding:6px 13px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--muted);transition:all .2s;display:flex;align-items:center;gap:5px;}
+.hbtn:hover{color:var(--text);border-color:var(--muted);}
+.hbtn.accent{border-color:var(--series-c,var(--border));color:var(--series-c,var(--muted));background:var(--series-bg,transparent);}
+.hbtn.accent:hover{background:var(--series-bg,transparent);opacity:.8;}
+.hbtn.new-series{border-style:dashed;}
+.api-dot{width:6px;height:6px;border-radius:50%;background:var(--dim);flex-shrink:0;}
+.tabs{display:flex;gap:2px;padding-top:20px;overflow-x:auto;}
+.tab{padding:9px 18px;border-radius:var(--radius) var(--radius) 0 0;border:1px solid transparent;background:transparent;color:var(--muted);font-size:12px;font-family:'Noto Sans KR',sans-serif;transition:all .2s;border-bottom:none;white-space:nowrap;}
+.tab:hover{color:var(--text);}
+.tab.active{background:var(--tab-bg);border-color:var(--tab-border);color:var(--tab-c);}
+.tab-add{padding:9px 14px;border:none;background:transparent;color:var(--dim);font-size:18px;font-weight:300;line-height:1;transition:color .2s;}
+.tab-add:hover{color:var(--muted);}
+
+/* API DRAWER */
+.api-drawer{background:var(--surface);border-bottom:1px solid var(--border);max-height:0;overflow:hidden;transition:max-height .3s;}
+.api-drawer.open{max-height:120px;}
+.api-drawer-inner{max-width:1100px;margin:0 auto;padding:16px 40px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.api-input-row{display:flex;gap:8px;flex:1;min-width:260px;}
+#apiKeyInput{flex:1;font-family:'IBM Plex Mono',monospace;font-size:12px;}
+.api-save-btn,.api-clear-btn{white-space:nowrap;padding:8px 14px;border-radius:var(--radius);font-size:12px;border:1px solid var(--border);}
+.api-save-btn{background:rgba(196,147,90,.1);border-color:rgba(196,147,90,.4);color:#c4935a;}
+.api-clear-btn{background:transparent;color:var(--muted);}
+.api-note{font-size:11px;color:var(--dim);width:100%;}
+
+/* MAIN */
+.main{max-width:1100px;margin:0 auto;padding:40px;}
+.series-panel{display:none;}
+.series-panel.active{display:block;}
+
+/* SERIES META */
+.series-meta{padding:22px 26px;border-radius:var(--radius);margin-bottom:30px;border:1px solid;}
+.series-meta-title{font-size:18px;font-weight:600;letter-spacing:-.02em;margin-bottom:3px;}
+.series-meta-sub{font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--muted);margin-bottom:12px;}
+.series-meta-tags{display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
+.tag{font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted);}
+.meta-edit-btn{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid;background:transparent;transition:all .15s;margin-left:auto;}
+
+/* SEASON BLOCK */
+.season-block{margin-bottom:44px;}
+.season-header{display:flex;align-items:center;gap:10px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.season-title{font-size:15px;font-weight:600;}
+.season-btns{display:flex;gap:8px;margin-left:auto;align-items:center;}
+.season-btn{font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:4px 12px;border:1px solid var(--border);border-radius:20px;background:transparent;color:var(--dim);transition:all .15s;}
+.season-btn:hover{color:var(--muted);border-color:var(--muted);}
+.season-btn.del{color:rgba(200,80,80,.5);border-color:rgba(200,80,80,.2);}
+.season-btn.del:hover{color:rgba(200,80,80,.9);border-color:rgba(200,80,80,.5);}
+
+/* EPISODE CARD */
+.ep-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);margin-bottom:5px;overflow:hidden;transition:border-color .2s;}
+.ep-card:hover{border-color:var(--dim);}
+.ep-head{display:flex;align-items:center;gap:12px;padding:13px 16px;cursor:pointer;user-select:none;}
+.ep-num{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--dim);min-width:26px;}
+.ep-title{flex:1;font-size:14px;font-weight:500;letter-spacing:-.01em;}
+.ep-badge{font-family:'Noto Sans KR',sans-serif;font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(90,156,138,.1);border:1px solid rgba(90,156,138,.25);color:#5a9c8a;white-space:nowrap;flex-shrink:0;}
+.ep-acts{display:flex;gap:4px;flex-shrink:0;}
+.ep-act{font-family:'Noto Sans KR',sans-serif;font-size:10px;padding:3px 8px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--dim);transition:all .15s;}
+.ep-act:hover{color:var(--muted);border-color:var(--muted);}
+.ep-act.del-act:hover{color:rgba(200,80,80,.9);border-color:rgba(200,80,80,.5);}
+.ep-arrow{color:var(--dim);font-size:10px;transition:transform .2s;margin-left:6px;}
+.ep-card.open .ep-arrow{transform:rotate(180deg);}
+
+/* EP BODY */
+.ep-body{display:none;border-top:1px solid var(--border);}
+.ep-card.open .ep-body{display:block;}
+.ep-tabs{display:flex;border-bottom:1px solid var(--border);padding:0 16px;}
+.ep-tab-btn{padding:9px 14px;background:none;border:none;border-bottom:2px solid transparent;color:var(--dim);font-family:'Noto Sans KR',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;margin-bottom:-1px;}
+.ep-tab-btn:hover{color:var(--muted);}
+.ep-tab-btn.on{border-bottom-color:var(--ac,var(--muted));color:var(--ac,var(--muted));}
+.ep-pane{display:none;padding:16px;}
+.ep-pane.on{display:block;}
+
+/* OUTLINE */
+.outline-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.os{background:var(--bg);border:1px solid var(--bd);border-radius:4px;padding:11px 13px;}
+.os.full{grid-column:1/-1;}
+.os-label{font-family:'Noto Sans KR',sans-serif;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;color:var(--series-c,var(--muted));}
+.os-val{font-size:13px;color:var(--text);line-height:1.75;}
+.caution-box{margin-top:10px;background:rgba(200,80,80,.08);border:1px solid rgba(200,80,80,.2);border-radius:4px;padding:8px 12px;font-family:'Noto Sans KR',sans-serif;font-size:11.5px;color:rgba(200,120,120,.9);}
+
+/* ARTICLE */
+.article-pane{display:flex;flex-direction:column;gap:10px;}
+.gen-btn{display:flex;align-items:center;justify-content:center;gap:8px;padding:14px;border-radius:var(--radius);border:1px dashed var(--series-c,var(--muted));background:transparent;color:var(--series-c,var(--muted));font-size:13px;transition:all .2s;width:100%;}
+.gen-btn:hover{background:var(--series-bg,rgba(255,255,255,.03));}
+.gen-loading{display:none;align-items:center;gap:10px;padding:14px;color:var(--muted);font-size:13px;}
+.gen-loading.on{display:flex;}
+.spinner{width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--muted);border-radius:50%;animation:spin .7s linear infinite;flex-shrink:0;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.art-display{display:none;}
+.art-display.on{display:block;}
+.art-text{font-family:'Noto Serif KR',serif;font-size:15px;line-height:2;padding:18px;background:var(--bg);border:1px solid var(--bd);border-radius:4px;}
+.art-text p{margin-bottom:1.4em;}
+.art-text p:last-child{margin-bottom:0;}
+.art-actions{display:flex;align-items:center;gap:8px;margin-top:8px;}
+.art-wc{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--dim);}
+.art-btn{font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:5px 11px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--dim);margin-left:auto;transition:all .15s;}
+.art-btn:hover{color:var(--muted);}
+
+/* ADD BUTTONS */
+.add-ep-row{padding:10px 0 4px;}
+.add-ep-btn,.add-season-btn{font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:8px 16px;border:1px dashed var(--border);border-radius:var(--radius);background:transparent;color:var(--dim);transition:all .2s;width:100%;}
+.add-ep-btn:hover,.add-season-btn:hover{color:var(--muted);border-color:var(--muted);}
+.add-season-row{margin-top:10px;}
+
+/* SEASON VIEW MODAL */
+.sm-modal{display:none;position:fixed;inset:0;z-index:600;background:var(--bg);flex-direction:column;}
+.sm-modal.open{display:flex;}
+.sm-hd{padding:18px 44px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:center;gap:16px;flex-shrink:0;}
+.sm-title{font-size:16px;font-weight:600;}
+.sm-stat{font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--muted);}
+.sm-close{font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:7px 14px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--muted);margin-left:auto;}
+.sm-close:hover{color:var(--text);}
+.sm-body{flex:1;overflow-y:auto;padding:44px;}
+.sm-article{max-width:680px;margin:0 auto 60px;}
+.sm-ep-hd{display:flex;align-items:baseline;gap:10px;margin-bottom:24px;padding-bottom:12px;border-bottom:1px solid var(--border);}
+.sm-ep-num{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--dim);}
+.sm-ep-title{font-size:20px;font-weight:600;letter-spacing:-.03em;flex:1;}
+.sm-copy{font-family:'Noto Sans KR',sans-serif;font-size:11px;padding:3px 9px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--dim);flex-shrink:0;}
+.sm-art-text{font-family:'Noto Serif KR',serif;font-size:16px;line-height:2.1;}
+.sm-art-text p{margin-bottom:1.6em;}
+.sm-empty{font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--dim);padding:24px;text-align:center;border:1px dashed var(--border);border-radius:var(--radius);}
+.sm-hr{max-width:680px;margin:0 auto 60px;border:none;border-top:1px solid var(--bd);}
+
+/* EDIT MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.7);align-items:flex-start;justify-content:center;overflow-y:auto;padding:40px 20px;}
+.modal-overlay.open{display:flex;}
+.modal-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);width:100%;max-width:680px;margin:auto;}
+.modal-hd{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;}
+.modal-title{font-size:15px;font-weight:600;flex:1;}
+.modal-close{width:26px;height:26px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--muted);font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;}
+.modal-close:hover{color:var(--text);}
+.modal-body{padding:20px 22px;max-height:70vh;overflow-y:auto;}
+.modal-footer{padding:14px 22px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;}
+.modal-save{padding:9px 20px;border-radius:var(--radius);border:1px solid;font-size:13px;background:transparent;}
+.modal-cancel{padding:9px 16px;border-radius:var(--radius);border:1px solid var(--border);font-size:13px;background:transparent;color:var(--muted);}
+.modal-cancel:hover{color:var(--text);}
+.ef{margin-bottom:14px;}
+.ef-label{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--muted);margin-bottom:5px;display:block;letter-spacing:.05em;}
+.ef-note{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--dim);margin-top:4px;}
+.ef-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* WIZARD */
+.wiz-steps{display:flex;gap:4px;margin-bottom:18px;}
+.wiz-step-dot{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);background:transparent;color:var(--dim);font-family:'Noto Sans KR',sans-serif;font-size:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.wiz-step-dot.on{background:var(--series-c,var(--muted));border-color:var(--series-c,var(--muted));color:var(--bg);}
+.wiz-step-dot.done{background:rgba(90,156,138,.2);border-color:rgba(90,156,138,.4);color:#5a9c8a;}
+.wiz-step-line{flex:1;height:1px;background:var(--border);margin-top:14px;}
+.wiz-section{margin-bottom:16px;}
+.wiz-section-title{font-family:'Noto Sans KR',sans-serif;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:10px;}
+.color-picker{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.color-sw{width:26px;height:26px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:transform .15s;}
+.color-sw:hover{transform:scale(1.15);}
+.color-sw.on{border-color:var(--text);transform:scale(1.1);}
+.tmpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.tmpl-card{padding:10px 13px;border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:all .2s;}
+.tmpl-card:hover{border-color:var(--muted);}
+.tmpl-card.on{border-color:var(--series-c,var(--muted));background:var(--series-bg,transparent);}
+.tmpl-card-title{font-family:'Noto Sans KR',sans-serif;font-size:12px;font-weight:500;color:var(--text);margin-bottom:3px;}
+.tmpl-card-desc{font-family:'Noto Sans KR',sans-serif;font-size:11px;color:var(--dim);line-height:1.6;}
+.sys-prompt-area{min-height:160px;font-family:'Noto Sans KR',sans-serif;font-size:12px;line-height:1.7;}
+
+/* CONFIRM */
+.confirm-overlay{display:none;position:fixed;inset:0;z-index:900;background:rgba(0,0,0,.75);align-items:center;justify-content:center;}
+.confirm-overlay.open{display:flex;}
+.confirm-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:24px 28px;max-width:380px;width:90%;}
+.confirm-title{font-size:15px;font-weight:600;margin-bottom:8px;}
+.confirm-msg{font-family:'Noto Sans KR',sans-serif;font-size:13px;color:var(--muted);margin-bottom:20px;line-height:1.7;}
+.confirm-btns{display:flex;gap:8px;justify-content:flex-end;}
+.confirm-ok{padding:8px 18px;border-radius:var(--radius);border:1px solid rgba(200,80,80,.5);color:rgba(200,100,100,.9);background:rgba(200,80,80,.08);font-size:13px;}
+.confirm-ok:hover{background:rgba(200,80,80,.15);}
+.confirm-no{padding:8px 14px;border-radius:var(--radius);border:1px solid var(--border);color:var(--muted);background:transparent;font-size:13px;}
+.confirm-no:hover{color:var(--text);}
+
+/* SERIES MGMT MODAL */
+.series-mgmt{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.6);align-items:flex-start;justify-content:flex-end;}
+.series-mgmt.open{display:flex;}
+.series-mgmt-box{background:var(--surface);border-left:1px solid var(--border);width:320px;height:100vh;overflow-y:auto;padding:24px 20px;display:flex;flex-direction:column;gap:12px;}
+.smgmt-title{font-size:14px;font-weight:600;margin-bottom:4px;}
+.smgmt-row{display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);background:var(--card);}
+.smgmt-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.smgmt-name{font-family:'Noto Sans KR',sans-serif;font-size:13px;flex:1;}
+.smgmt-del{font-size:11px;padding:3px 8px;border:1px solid rgba(200,80,80,.2);border-radius:4px;color:rgba(200,100,100,.6);background:transparent;}
+.smgmt-del:hover{color:rgba(200,100,100,.9);border-color:rgba(200,80,80,.5);}
+.smgmt-close{font-family:'Noto Sans KR',sans-serif;font-size:12px;padding:8px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;color:var(--muted);width:100%;margin-top:auto;}
+
+@media(max-width:680px){
+  .header{padding:18px 18px 0;}
+  .api-drawer-inner,.main,.sm-hd,.sm-body{padding-left:18px;padding-right:18px;}
+  .outline-grid,.ef-row,.tmpl-grid{grid-template-columns:1fr;}
+  .ep-acts{display:none;}
+  .modal-overlay{padding:0;}
+  .modal-box{border-radius:0;min-height:100vh;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header" id="appHeader">
+  <div class="header-inner">
+    <div class="header-row">
+      <div>
+        <div class="header-label">브런치 CMS · 2025</div>
+        <div class="header-title">연재 기획 & 집필 시스템</div>
+      </div>
+      <div class="header-btns">
+        <button class="hbtn" onclick="toggleApiDrawer()"><span class="api-dot" id="apiDot"></span>API 설정</button>
+        <button class="hbtn" onclick="exportData()" title="전체 데이터 내보내기">↓ 내보내기</button>
+        <label class="hbtn" style="cursor:pointer;" title="JSON 파일 불러오기">↑ 불러오기<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
+        <button class="hbtn" onclick="openSeriesMgmt()">≡ 연재 관리</button>
+        <button class="hbtn new-series" onclick="openWizard()">+ 새 연재</button>
+      </div>
+    </div>
+    <div class="tabs" id="mainTabs"></div>
+  </div>
+</div>
+
+<!-- API DRAWER -->
+<div class="api-drawer" id="apiDrawer">
+  <div class="api-drawer-inner">
+    <span style="font-family:'Noto Sans KR',sans-serif;font-size:12px;color:var(--muted);white-space:nowrap;">API Key</span>
+    <div class="api-input-row">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-...">
+      <button class="api-save-btn" onclick="saveApiKey()">저장</button>
+      <button class="api-clear-btn" onclick="clearApiKey()">삭제</button>
+    </div>
+    <div class="api-note">세션 동안만 유지됩니다. 파일 저장 시 포함되지 않습니다.</div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main"><div id="seriesPanels"></div></div>
+
+<!-- SEASON VIEW MODAL -->
+<div class="sm-modal" id="smModal">
+  <div class="sm-hd">
+    <div><div class="sm-title" id="smTitle"></div><div class="sm-stat" id="smStat"></div></div>
+    <button class="sm-close" onclick="closeSmModal()">✕ 닫기</button>
+  </div>
+  <div class="sm-body" id="smBody"></div>
+</div>
+
+<!-- EDIT EPISODE MODAL -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div class="modal-title" id="editModalTitle">편집</div>
+      <button class="modal-close" onclick="closeModal('editModal')">✕</button>
+    </div>
+    <div class="modal-body" id="editModalBody"></div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="closeModal('editModal')">취소</button>
+      <button class="modal-save" id="editModalSave" style="border-color:var(--muted);color:var(--muted);">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- NEW SERIES WIZARD MODAL -->
+<div class="modal-overlay" id="wizardModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div class="modal-title">새 연재 만들기</div>
+      <button class="modal-close" onclick="closeModal('wizardModal')">✕</button>
+    </div>
+    <div class="modal-body" id="wizardBody"></div>
+    <div class="modal-footer">
+      <button class="modal-cancel" id="wizPrev" onclick="wizPrev()" style="display:none;">← 이전</button>
+      <button class="modal-cancel" onclick="closeModal('wizardModal')">취소</button>
+      <button class="modal-save" id="wizNext" style="border-color:var(--muted);color:var(--muted);" onclick="wizNext()">다음 →</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT META MODAL -->
+<div class="modal-overlay" id="metaModal">
+  <div class="modal-box">
+    <div class="modal-hd">
+      <div class="modal-title" id="metaModalTitle">연재 정보 편집</div>
+      <button class="modal-close" onclick="closeModal('metaModal')">✕</button>
+    </div>
+    <div class="modal-body" id="metaModalBody"></div>
+    <div class="modal-footer">
+      <button class="modal-cancel" onclick="closeModal('metaModal')">취소</button>
+      <button class="modal-save" id="metaModalSave" style="border-color:var(--muted);color:var(--muted);">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- CONFIRM -->
+<div class="confirm-overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-title" id="confirmTitle">삭제 확인</div>
+    <div class="confirm-msg" id="confirmMsg"></div>
+    <div class="confirm-btns">
+      <button class="confirm-no" onclick="closeConfirm()">취소</button>
+      <button class="confirm-ok" id="confirmOk">삭제</button>
+    </div>
+  </div>
+</div>
+
+<!-- SERIES MGMT PANEL -->
+<div class="series-mgmt" id="seriesMgmt">
+  <div class="series-mgmt-box" id="seriesMgmtBox">
+    <div class="smgmt-title">연재 관리</div>
+    <div id="seriesMgmtList"></div>
+    <button class="smgmt-close" onclick="closeSeriesMgmt()">닫기</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONSTANTS
+// ═══════════════════════════════════════════════════
+const STORAGE_KEY='brunch_cms_v1';
+const ART_PFX='brunch_art_';
+const COLORS=[
+  {c:'#c4935a',bg:'rgba(196,147,90,.08)',border:'rgba(196,147,90,.22)'},
+  {c:'#5a9c8a',bg:'rgba(90,156,138,.08)',border:'rgba(90,156,138,.22)'},
+  {c:'#8a6faa',bg:'rgba(138,111,170,.08)',border:'rgba(138,111,170,.22)'},
+  {c:'#6a8faa',bg:'rgba(106,143,170,.08)',border:'rgba(106,143,170,.22)'},
+  {c:'#aa6a7a',bg:'rgba(170,106,122,.08)',border:'rgba(170,106,122,.22)'},
+  {c:'#7aaa6a',bg:'rgba(122,170,106,.08)',border:'rgba(122,170,106,.22)'},
+  {c:'#aaa06a',bg:'rgba(170,160,106,.08)',border:'rgba(170,160,106,.22)'},
+  {c:'#7a8aaa',bg:'rgba(122,138,170,.08)',border:'rgba(122,138,170,.22)'},
+];
+const EP_TEMPLATES={
+  essay:{name:'신학 에세이형',desc:'장면→균열→전개→전환→여운',
+    fields:[{k:'thesis',l:'핵심 테제'},{k:'opening',l:'도입부 — 장면'},{k:'crack',l:'균열 — 핵심 질문'},
+      {k:'dev0',l:'전개 논점 ①'},{k:'dev1',l:'전개 논점 ②'},{k:'dev2',l:'전개 논점 ③'},
+      {k:'turn',l:'전환 — 인사이트'},{k:'closing',l:'마무리 — 여운'},
+      {k:'reference',l:'참고 텍스트'},{k:'caution',l:'주의사항'}]},
+  classic:{name:'고전문학형',desc:'고전 장면→현대 번역→성찰→질문',
+    fields:[{k:'thesis',l:'핵심 테제'},{k:'classic',l:'고전 텍스트 핵심 장면'},
+      {k:'translation',l:'현대 독자의 언어로'},{k:'reflection',l:'인문·신학 성찰'},
+      {k:'question',l:'독자에게 남기는 질문'},
+      {k:'reference',l:'참고 텍스트'},{k:'caution',l:'주의사항'}]},
+  column:{name:'시사칼럼형',desc:'역설→명명→렌즈→강한 문장',
+    fields:[{k:'opener',l:'역설적 오프너'},{k:'naming',l:'문제 명명'},
+      {k:'lens',l:'인문·신학 렌즈'},{k:'closing',l:'마무리 강한 문장'},
+      {k:'reference',l:'참고 텍스트'},{k:'caution',l:'주의사항'}]},
+  free:{name:'자유형',desc:'섹션 1–5 + 참고/주의',
+    fields:[{k:'f1',l:'섹션 1'},{k:'f2',l:'섹션 2'},{k:'f3',l:'섹션 3'},
+      {k:'f4',l:'섹션 4'},{k:'f5',l:'섹션 5'},
+      {k:'reference',l:'참고 텍스트'},{k:'caution',l:'주의사항'}]},
+};
+const DEFAULT_SYS={
+  essay:`당신은 한국어 인문신학 브런치 에세이 작가입니다.\n\n문체 규칙:\n- 도입부: 김영하 스타일 — 일상의 구체적 장면에서 시작, 아이러니와 역설 활용\n- 전개: 김기석 스타일 — 시적이고 논리적, 신앙 언어가 설교 아닌 성찰로 흐름\n- 마무리: 정호승 스타일 — 짧고 여운 있는 문장\n- "우리는", "우리가" 등 공동체 언어 우선 사용\n- 문장 리듬: 짧은 단언 → 조금 긴 설명 → 다시 짧은 마무리\n- 단락은 3줄 이내\n- 소제목·번호 목록·볼드체 절대 사용 금지\n- "~해야 합니다" "~하시기 바랍니다" 설교 어투 절대 금지\n- "현대 사회에서는" "결론적으로" 같은 논문 어투 금지\n- 결론을 명확히 내리지 말 것 — 마지막은 질문이나 여운`,
+  classic:`당신은 한국어 인문 에세이 작가입니다. 고전 문학 텍스트를 현대 독자의 삶에 연결합니다.\n\n문체 규칙:\n- 김기석 스타일 주도 — 시적이고 깊이 있는 산문, 침착하고 온기\n- 마무리: 정호승 스타일 — 짧고 조용한 여운\n- 독자 옆에 앉아 함께 읽어주는 목소리 (학자처럼 해설 금지)\n- "X는 ~라고 말했다" 식 해설 금지\n- 소제목·번호 목록 금지\n- 목표 분량: 1,800~2,000자`,
+  column:`당신은 한국어 시사 칼럼니스트입니다. 목사이자 인문학자의 시선으로 사회 이슈를 읽습니다.\n\n문체 규칙:\n- 김영하 스타일 주도 — 예리하고 빠르며 아이러니 활용\n- 진보도 보수도 아닌 인간학적·신학적 제3의 시선\n- 특정 정당명·정치인 이름 사용 절대 금지\n- "~해야 한다"로 끝나는 처방 금지\n- 마지막 문장은 짧고 강하게, 공유하고 싶은 문장으로\n- 소제목·목록 금지\n- 목표 분량: 1,000~1,200자`,
+  free:`당신은 한국어 브런치 에세이 작가입니다.\n문체: 읽기 쉽고 깊이 있는 산문. 소제목·번호 목록 금지. 결론을 강요하지 말 것.`,
+};
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let _data=null;
+let _apiKey='';
+let _activeSeriesId=null;
+let _wiz={step:1,colorIdx:0,template:'essay',seriesId:null};
+let _confirmCb=null;
+try{_apiKey=sessionStorage.getItem('brunch_api')||'';}catch(e){}
+
+function uid(){return 'x'+Date.now().toString(36)+Math.random().toString(36).slice(2,5);}
+
+// ═══════════════════════════════════════════════════
+// DATA LAYER
+// ═══════════════════════════════════════════════════
+function loadData(){
+  if(_data) return _data;
+  try{const s=localStorage.getItem(STORAGE_KEY);if(s){_data=JSON.parse(s);return _data;}}catch(e){}
+  _data=getDefaultData();
+  return _data;
+}
+function saveData(){try{localStorage.setItem(STORAGE_KEY,JSON.stringify(_data));}catch(e){alert('저장 오류: localStorage 용량을 확인해주세요.');}}
+function getSeries(sid){return loadData().series.find(s=>s.id===sid);}
+function getSeason(sid,ssid){return getSeries(sid)?.seasons.find(s=>s.id===ssid);}
+function getEp(sid,ssid,eid){return getSeason(sid,ssid)?.episodes.find(e=>e.id===eid);}
+
+// Articles
+function artKey(sid,eid){return ART_PFX+sid+'_'+eid;}
+function getArt(sid,eid){try{return localStorage.getItem(artKey(sid,eid))||'';}catch(e){return '';}}
+function saveArt(sid,eid,t){try{localStorage.setItem(artKey(sid,eid),t);}catch(e){}}
+function delArt(sid,eid){try{localStorage.removeItem(artKey(sid,eid));}catch(e){}}
+
+// ═══════════════════════════════════════════════════
+// API
+// ═══════════════════════════════════════════════════
+function buildUserPrompt(series,ep){
+  const tmpl=EP_TEMPLATES[series.template]||EP_TEMPLATES.free;
+  let p=`아래 기획안을 바탕으로 브런치 에세이 1편을 완성된 산문으로 작성해주세요.\n\n제목: ${ep.title}\n\n[아웃라인]\n`;
+  for(const f of tmpl.fields){const v=ep[f.k];if(v) p+=`${f.l}: ${v}\n`;}
+  p+=`\n목표 분량: ${series.lengthGuide||'2,000자 내외'}\n\n제목은 쓰지 말고 본문만 작성해주세요.`;
+  return p;
+}
+
+async function generateArticle(sid,ssid,eid){
+  const k=_apiKey;
+  if(!k){openApiDrawer();alert('API 키를 먼저 입력해주세요.');return;}
+  const series=getSeries(sid); const ep=getEp(sid,ssid,eid);
+  if(!ep) return;
+  const cardId=`card_${sid}_${eid}`;
+  const cardEl=document.getElementById(cardId);
+  if(!cardEl) return;
+  const genBtn=cardEl.querySelector('.gen-btn');
+  const loading=cardEl.querySelector('.gen-loading');
+  const display=cardEl.querySelector('.art-display');
+  const textEl=cardEl.querySelector('.art-text');
+  genBtn.style.display='none';
+  loading.classList.add('on');
+  display.classList.remove('on');
+  if(textEl) textEl.innerHTML='';
+  try{
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json','x-api-key':k,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:4096,stream:true,
+        system:series.systemPrompt||DEFAULT_SYS[series.template]||DEFAULT_SYS.free,
+        messages:[{role:'user',content:buildUserPrompt(series,ep)}]})
+    });
+    if(!res.ok){const e=await res.json();throw new Error(e.error?.message||`HTTP ${res.status}`);}
+    loading.classList.remove('on');
+    display.classList.add('on');
+    if(!textEl){display.innerHTML='<div class="art-text" id="at_'+eid+'"></div>';display.insertAdjacentHTML('beforeend','<div class="art-actions"><span class="art-wc" id="awc_'+eid+'"></span><button class="art-btn" onclick="rewriteArt(\''+sid+'\',\''+ssid+'\',\''+eid+'\')">다시 쓰기</button><button class="art-btn" onclick="copyArt(\''+sid+'\',\''+eid+'\')">복사</button></div>');}
+    const tEl=cardEl.querySelector('.art-text');
+    const reader=res.body.getReader(); const dec=new TextDecoder();
+    let full='',buf='';
+    while(true){
+      const{done,value}=await reader.read();
+      if(done) break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop()||'';
+      for(const line of lines){
+        if(!line.startsWith('data: ')) continue;
+        const d=line.slice(6).trim();if(d==='[DONE]') continue;
+        try{const p=JSON.parse(d);if(p.type==='content_block_delta'&&p.delta?.type==='text_delta'){full+=p.delta.text;tEl.innerHTML=full.split('\n\n').map(par=>par.trim()?`<p>${par.replace(/\n/g,'<br>')}</p>`:'').join('');}}catch(e){}
+      }
+    }
+    saveArt(sid,eid,full);
+    updateBadge(cardEl,true);
+    const wcEl=cardEl.querySelector('.art-wc');if(wcEl) wcEl.textContent=full.replace(/\s/g,'').length.toLocaleString()+'자';
+    const dBtn=cardEl.querySelector('.gen-btn');if(dBtn) dBtn.style.display='none';
+  }catch(err){
+    loading.classList.remove('on');genBtn.style.display='';
+    alert(`집필 오류: ${err.message}`);
+  }
+}
+
+function rewriteArt(sid,ssid,eid){
+  delArt(sid,eid);
+  const cardEl=document.getElementById(`card_${sid}_${eid}`);
+  if(!cardEl) return;
+  const display=cardEl.querySelector('.art-display');
+  const genBtn=cardEl.querySelector('.gen-btn');
+  if(display) display.classList.remove('on');
+  if(genBtn) genBtn.style.display='';
+  updateBadge(cardEl,false);
+  generateArticle(sid,ssid,eid);
+}
+
+function copyArt(sid,eid){
+  const t=getArt(sid,eid);if(!t) return;
+  navigator.clipboard.writeText(t).then(()=>{
+    const btns=document.querySelectorAll(`#card_${sid}_${eid} .art-btn`);
+    btns.forEach(b=>{if(b.textContent==='복사'){b.textContent='복사됨 ✓';setTimeout(()=>b.textContent='복사',2000);}});
+  });
+}
+function updateBadge(cardEl,on){
+  let b=cardEl.querySelector('.ep-badge');
+  if(on&&!b){b=document.createElement('span');b.className='ep-badge';b.textContent='집필완료';const arr=cardEl.querySelector('.ep-arrow');arr.parentNode.insertBefore(b,arr);}
+  else if(!on&&b) b.remove();
+}
+
+// ═══════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════
+function esc(s){return(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+function buildOutlineHTML(series,ep){
+  const tmpl=EP_TEMPLATES[series.template]||EP_TEMPLATES.free;
+  const color=COLORS[series.colorIdx%COLORS.length];
+  let h='<div class="outline-grid">';
+  for(const f of tmpl.fields){
+    if(f.k==='caution') continue;
+    const v=ep[f.k]||'';
+    const full=['thesis','opening'].includes(f.k)?'full':'';
+    h+=`<div class="os ${full}"><div class="os-label" style="color:${color.c}">${f.l}</div><div class="os-val">${esc(v)}</div></div>`;
+  }
+  h+='</div>';
+  if(ep.caution) h+=`<div class="caution-box">⚠ ${esc(ep.caution)}</div>`;
+  return h;
+}
+
+function buildArtHTML(series,season,ep){
+  const sid=series.id,eid=ep.id,ssid=season.id;
+  const color=COLORS[series.colorIdx%COLORS.length];
+  const saved=getArt(sid,eid);
+  const hasSaved=!!saved;
+  const artBody=hasSaved?saved.split('\n\n').map(p=>p.trim()?`<p>${p.replace(/\n/g,'<br>')}</p>`:'').join(''):'';
+  const wc=hasSaved?saved.replace(/\s/g,'').length:0;
+  return `<div class="article-pane">
+    <button class="gen-btn" style="${hasSaved?'display:none':''}" onclick="generateArticle('${sid}','${ssid}','${eid}')">✍ 집필하기</button>
+    <div class="gen-loading"><div class="spinner"></div><span>집필 중입니다...</span></div>
+    <div class="art-display ${hasSaved?'on':''}">
+      ${hasSaved?`<div class="art-text">${artBody}</div><div class="art-actions"><span class="art-wc">${wc.toLocaleString()}자</span><button class="art-btn" onclick="rewriteArt('${sid}','${ssid}','${eid}')">다시 쓰기</button><button class="art-btn" onclick="copyArt('${sid}','${eid}')">복사</button></div>`:''}
+    </div>
+  </div>`;
+}
+
+function buildEpCard(series,season,ep,gnum){
+  const sid=series.id,ssid=season.id,eid=ep.id;
+  const color=COLORS[series.colorIdx%COLORS.length];
+  const hasSaved=!!getArt(sid,eid);
+  const cardId=`card_${sid}_${eid}`;
+  return `<div class="ep-card" id="${cardId}" style="--ac:${color.c}">
+    <div class="ep-head" onclick="toggleCard('${cardId}')">
+      <span class="ep-num">${gnum}화</span>
+      <span class="ep-title">${esc(ep.title)}</span>
+      ${hasSaved?'<span class="ep-badge">집필완료</span>':''}
+      <div class="ep-acts" onclick="event.stopPropagation()">
+        <button class="ep-act" onclick="openEditEp('${sid}','${ssid}','${eid}')">편집</button>
+        <button class="ep-act del-act" onclick="doConfirm('에피소드를 삭제하시겠습니까?<br><b>${esc(ep.title)}</b>',()=>deleteEp('${sid}','${ssid}','${eid}'))">×</button>
+      </div>
+      <span class="ep-arrow">▾</span>
+    </div>
+    <div class="ep-body">
+      <div class="ep-tabs">
+        <button class="ep-tab-btn on" data-tab="outline" onclick="switchEpTab('${cardId}','outline')">아웃라인</button>
+        <button class="ep-tab-btn" data-tab="article" onclick="switchEpTab('${cardId}','article')">집필본</button>
+      </div>
+      <div class="ep-pane on" data-tab="outline">${buildOutlineHTML(series,ep)}</div>
+      <div class="ep-pane" data-tab="article">${buildArtHTML(series,season,ep)}</div>
+    </div>
+  </div>`;
+}
+
+function buildSeasonBlock(series,season,seasonIdx){
+  const sid=series.id,ssid=season.id;
+  const color=COLORS[series.colorIdx%COLORS.length];
+  let gnum=0;
+  for(let i=0;i<seasonIdx;i++) gnum+=series.seasons[i].episodes.length;
+  let h=`<div class="season-block" id="sb_${ssid}">
+    <div class="season-header">
+      <span class="season-title">${esc(season.title)}</span>
+      <div class="season-btns">
+        <button class="season-btn" onclick="openEditSeason('${sid}','${ssid}')">시즌명 편집</button>
+        <button class="season-btn" onclick="openSmModal('${sid}','${ssid}')">전체 집필본 보기</button>
+        <button class="season-btn del" onclick="doConfirm('시즌과 하위 에피소드 전체를 삭제합니다.<br><b>${esc(season.title)}</b>',()=>deleteSeason('${sid}','${ssid}'))">시즌 삭제</button>
+      </div>
+    </div>`;
+  season.episodes.forEach((ep,ei)=>{gnum++;h+=buildEpCard(series,season,ep,gnum);});
+  h+=`<div class="add-ep-row"><button class="add-ep-btn" onclick="openAddEp('${sid}','${ssid}')">+ 에피소드 추가</button></div></div>`;
+  return h;
+}
+
+function buildSeriesPanel(series){
+  const color=COLORS[series.colorIdx%COLORS.length];
+  const totalEps=series.seasons.reduce((a,s)=>a+s.episodes.length,0);
+  let h=`<div class="series-panel" id="panel_${series.id}" data-sid="${series.id}" style="--series-c:${color.c};--series-bg:${color.bg};--series-border:${color.border}">
+    <div class="series-meta" style="background:${color.bg};border-color:${color.border}">
+      <div class="series-meta-title" style="color:${color.c}">${esc(series.title)}</div>
+      <div class="series-meta-sub">${esc(series.subtitle||'')}</div>
+      <div class="series-meta-tags">
+        ${series.schedule?`<span class="tag">${esc(series.schedule)}</span>`:''}
+        ${series.lengthGuide?`<span class="tag">${esc(series.lengthGuide)}</span>`:''}
+        ${series.structure?`<span class="tag">${esc(series.structure)}</span>`:''}
+        <span class="tag">${totalEps}화</span>
+        <button class="meta-edit-btn" style="border-color:${color.border};color:${color.c};" onclick="openMetaEdit('${series.id}')">연재 정보 편집</button>
+      </div>
+    </div>`;
+  series.seasons.forEach((ss,si)=>{h+=buildSeasonBlock(series,ss,si);});
+  h+=`<div class="add-season-row"><button class="add-season-btn" onclick="openAddSeason('${series.id}')">+ 시즌 / 섹션 추가</button></div></div>`;
+  return h;
+}
+
+function buildTabs(){
+  const data=loadData();
+  let h='';
+  data.series.forEach(s=>{
+    const color=COLORS[s.colorIdx%COLORS.length];
+    const active=_activeSeriesId===s.id;
+    h+=`<button class="tab ${active?'active':''}" data-sid="${s.id}" onclick="switchTab('${s.id}')" style="--tab-bg:${color.bg};--tab-border:${color.border};--tab-c:${color.c}">${esc(s.title)}</button>`;
+  });
+  h+=`<button class="tab-add" onclick="openWizard()" title="새 연재 추가">＋</button>`;
+  document.getElementById('mainTabs').innerHTML=h;
+}
+
+function renderAll(){
+  const data=loadData();
+  if(!_activeSeriesId&&data.series.length>0) _activeSeriesId=data.series[0].id;
+  buildTabs();
+  let panelsHTML='';
+  data.series.forEach(s=>{panelsHTML+=buildSeriesPanel(s);});
+  document.getElementById('seriesPanels').innerHTML=panelsHTML;
+  document.querySelectorAll('.series-panel').forEach(p=>{
+    p.classList.toggle('active',p.dataset.sid===_activeSeriesId);
+  });
+}
+
+function rebuildPanel(sid){
+  const series=getSeries(sid);
+  if(!series) return;
+  const old=document.getElementById(`panel_${sid}`);
+  if(old){
+    const dummy=document.createElement('div');
+    dummy.innerHTML=buildSeriesPanel(series);
+    old.replaceWith(dummy.firstElementChild);
+    document.getElementById(`panel_${sid}`).classList.toggle('active',sid===_activeSeriesId);
+  }
+  buildTabs();
+}
+
+// ═══════════════════════════════════════════════════
+// UI FUNCTIONS
+// ═══════════════════════════════════════════════════
+function switchTab(sid){
+  _activeSeriesId=sid;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('active',t.dataset.sid===sid));
+  document.querySelectorAll('.series-panel').forEach(p=>p.classList.toggle('active',p.dataset.sid===sid));
+}
+function toggleCard(id){document.getElementById(id)?.classList.toggle('open');}
+function switchEpTab(cardId,tab){
+  const card=document.getElementById(cardId);if(!card) return;
+  card.querySelectorAll('.ep-tab-btn').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
+  card.querySelectorAll('.ep-pane').forEach(p=>p.classList.toggle('on',p.dataset.tab===tab));
+}
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function doConfirm(msg,cb){
+  _confirmCb=cb;
+  document.getElementById('confirmMsg').innerHTML=msg;
+  document.getElementById('confirmOk').onclick=()=>{closeConfirm();cb();};
+  document.getElementById('confirmOverlay').classList.add('open');
+}
+function closeConfirm(){document.getElementById('confirmOverlay').classList.remove('open');}
+function toggleApiDrawer(){document.getElementById('apiDrawer').classList.toggle('open');}
+function openApiDrawer(){document.getElementById('apiDrawer').classList.add('open');}
+function saveApiKey(){const v=document.getElementById('apiKeyInput').value.trim();if(!v) return;_apiKey=v;try{sessionStorage.setItem('brunch_api',v);}catch(e){}document.getElementById('apiDot').style.background='#5a9c8a';document.getElementById('apiKeyInput').value='••••••••••••'+v.slice(-4);setTimeout(()=>document.getElementById('apiDrawer').classList.remove('open'),600);}
+function clearApiKey(){_apiKey='';try{sessionStorage.removeItem('brunch_api');}catch(e){}document.getElementById('apiKeyInput').value='';document.getElementById('apiDot').style.background='var(--dim)';}
+
+// SEASON VIEW MODAL
+function openSmModal(sid,ssid){
+  const series=getSeries(sid);
+  const season=getSeason(sid,ssid);
+  if(!season) return;
+  document.getElementById('smTitle').textContent=season.title;
+  const written=season.episodes.filter(e=>getArt(sid,e.id)).length;
+  document.getElementById('smStat').textContent=`${written}/${season.episodes.length}편 집필완료`;
+  let gnum=0;
+  for(const s of series.seasons){if(s.id===ssid) break; gnum+=s.episodes.length;}
+  let h='';
+  season.episodes.forEach((ep,i)=>{
+    gnum++;
+    const art=getArt(sid,ep.id);
+    h+=`<div class="sm-article"><div class="sm-ep-hd"><span class="sm-ep-num">${gnum}화</span><span class="sm-ep-title">${esc(ep.title)}</span>${art?`<button class="sm-copy" onclick="smCopy('${sid}','${ep.id}',this)">복사</button>`:''}</div>`;
+    if(art) h+=`<div class="sm-art-text">${art.split('\n\n').map(p=>p.trim()?`<p>${p.replace(/\n/g,'<br>')}</p>`:'').join('')}</div>`;
+    else h+=`<div class="sm-empty">아직 집필되지 않은 편입니다.</div>`;
+    h+='</div>';
+    if(i<season.episodes.length-1) h+=`<hr class="sm-hr">`;
+  });
+  document.getElementById('smBody').innerHTML=h;
+  document.getElementById('smModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+function closeSmModal(){document.getElementById('smModal').classList.remove('open');document.body.style.overflow='';}
+function smCopy(sid,eid,btn){const t=getArt(sid,eid);if(!t) return;navigator.clipboard.writeText(t).then(()=>{btn.textContent='복사됨 ✓';setTimeout(()=>btn.textContent='복사',2000);});}
+
+// SERIES MGMT PANEL
+function openSeriesMgmt(){
+  const data=loadData();
+  let h='';
+  data.series.forEach(s=>{
+    const color=COLORS[s.colorIdx%COLORS.length];
+    h+=`<div class="smgmt-row"><span class="smgmt-dot" style="background:${color.c}"></span><span class="smgmt-name">${esc(s.title)}</span><button class="smgmt-del" onclick="doConfirm('연재를 삭제하시겠습니까?<br><b>${esc(s.title)}</b>',()=>deleteSeries('${s.id}'))">삭제</button></div>`;
+  });
+  document.getElementById('seriesMgmtList').innerHTML=h;
+  document.getElementById('seriesMgmt').classList.add('open');
+}
+function closeSeriesMgmt(){document.getElementById('seriesMgmt').classList.remove('open');}
+
+// ═══════════════════════════════════════════════════
+// CRUD — EPISODE
+// ═══════════════════════════════════════════════════
+function buildEpForm(series,ep,prefix){
+  const tmpl=EP_TEMPLATES[series.template]||EP_TEMPLATES.free;
+  const color=COLORS[series.colorIdx%COLORS.length];
+  let h=`<div class="ef"><label class="ef-label">제목</label><input id="${prefix}_title" value="${esc(ep?.title||'')}"></div>`;
+  tmpl.fields.forEach(f=>{
+    const v=ep?ep[f.k]:'';
+    h+=`<div class="ef"><label class="ef-label">${f.l}</label><textarea id="${prefix}_${f.k}">${esc(v||'')}</textarea></div>`;
+  });
+  return h;
+}
+
+function openEditEp(sid,ssid,eid){
+  const series=getSeries(sid);
+  const ep=getEp(sid,ssid,eid);
+  const color=COLORS[series.colorIdx%COLORS.length];
+  document.getElementById('editModalTitle').textContent=`에피소드 편집`;
+  document.getElementById('editModalBody').innerHTML=buildEpForm(series,ep,'ef');
+  document.getElementById('editModalSave').style.cssText=`border-color:${color.c};color:${color.c};`;
+  document.getElementById('editModalSave').onclick=()=>saveEditEp(sid,ssid,eid);
+  openModal('editModal');
+}
+
+function saveEditEp(sid,ssid,eid){
+  const series=getSeries(sid);
+  const ep=getEp(sid,ssid,eid);
+  const tmpl=EP_TEMPLATES[series.template]||EP_TEMPLATES.free;
+  ep.title=document.getElementById('ef_title').value.trim()||ep.title;
+  tmpl.fields.forEach(f=>{const el=document.getElementById(`ef_${f.k}`);if(el) ep[f.k]=el.value.trim();});
+  saveData();
+  closeModal('editModal');
+  rebuildPanel(sid);
+}
+
+function openAddEp(sid,ssid){
+  const series=getSeries(sid);
+  const color=COLORS[series.colorIdx%COLORS.length];
+  document.getElementById('editModalTitle').textContent='새 에피소드 추가';
+  document.getElementById('editModalBody').innerHTML=buildEpForm(series,null,'nef');
+  document.getElementById('editModalSave').style.cssText=`border-color:${color.c};color:${color.c};`;
+  document.getElementById('editModalSave').onclick=()=>saveNewEp(sid,ssid);
+  openModal('editModal');
+}
+
+function saveNewEp(sid,ssid){
+  const series=getSeries(sid);
+  const season=getSeason(sid,ssid);
+  const tmpl=EP_TEMPLATES[series.template]||EP_TEMPLATES.free;
+  const title=document.getElementById('nef_title').value.trim();
+  if(!title){alert('제목을 입력해주세요.');return;}
+  const ep={id:uid(),title};
+  tmpl.fields.forEach(f=>{const el=document.getElementById(`nef_${f.k}`);if(el) ep[f.k]=el.value.trim();});
+  season.episodes.push(ep);
+  saveData();
+  closeModal('editModal');
+  rebuildPanel(sid);
+}
+
+function deleteEp(sid,ssid,eid){
+  const season=getSeason(sid,ssid);
+  delArt(sid,eid);
+  season.episodes=season.episodes.filter(e=>e.id!==eid);
+  saveData();rebuildPanel(sid);
+}
+
+// ═══════════════════════════════════════════════════
+// CRUD — SEASON
+// ═══════════════════════════════════════════════════
+function openAddSeason(sid){
+  document.getElementById('editModalTitle').textContent='새 시즌 / 섹션 추가';
+  document.getElementById('editModalBody').innerHTML=`<div class="ef"><label class="ef-label">시즌 이름</label><input id="ns_title" placeholder="예: 시즌 5 — 공동체의 우상"></div>`;
+  document.getElementById('editModalSave').onclick=()=>saveNewSeason(sid);
+  openModal('editModal');
+}
+function saveNewSeason(sid){
+  const title=document.getElementById('ns_title').value.trim();
+  if(!title){alert('시즌 이름을 입력해주세요.');return;}
+  const series=getSeries(sid);
+  series.seasons.push({id:uid(),title,episodes:[]});
+  saveData();closeModal('editModal');rebuildPanel(sid);
+}
+function openEditSeason(sid,ssid){
+  const season=getSeason(sid,ssid);
+  document.getElementById('editModalTitle').textContent='시즌명 편집';
+  document.getElementById('editModalBody').innerHTML=`<div class="ef"><label class="ef-label">시즌 이름</label><input id="es_title" value="${esc(season.title)}"></div>`;
+  document.getElementById('editModalSave').onclick=()=>saveEditSeason(sid,ssid);
+  openModal('editModal');
+}
+function saveEditSeason(sid,ssid){
+  const t=document.getElementById('es_title').value.trim();if(!t) return;
+  getSeason(sid,ssid).title=t;saveData();closeModal('editModal');rebuildPanel(sid);
+}
+function deleteSeason(sid,ssid){
+  const season=getSeason(sid,ssid);
+  season.episodes.forEach(e=>delArt(sid,e.id));
+  const series=getSeries(sid);
+  series.seasons=series.seasons.filter(s=>s.id!==ssid);
+  saveData();rebuildPanel(sid);
+}
+
+// ═══════════════════════════════════════════════════
+// CRUD — SERIES META EDIT
+// ═══════════════════════════════════════════════════
+function openMetaEdit(sid){
+  const s=getSeries(sid);
+  const color=COLORS[s.colorIdx%COLORS.length];
+  let h=`<div class="ef-row">
+    <div class="ef"><label class="ef-label">연재 제목</label><input id="me_title" value="${esc(s.title)}"></div>
+    <div class="ef"><label class="ef-label">발행 요일</label><input id="me_schedule" value="${esc(s.schedule||'')}"></div>
+  </div>
+  <div class="ef"><label class="ef-label">부제</label><input id="me_subtitle" value="${esc(s.subtitle||'')}"></div>
+  <div class="ef-row">
+    <div class="ef"><label class="ef-label">목표 분량</label><input id="me_length" value="${esc(s.lengthGuide||'')}"></div>
+    <div class="ef"><label class="ef-label">구조 흐름</label><input id="me_structure" value="${esc(s.structure||'')}"></div>
+  </div>
+  <div class="ef">
+    <label class="ef-label">색상</label>
+    <div class="color-picker">${COLORS.map((c,i)=>`<button type="button" class="color-sw ${i===s.colorIdx?'on':''}" style="background:${c.c}" onclick="selectColorMeta(${i})"></button>`).join('')}</div>
+    <input type="hidden" id="me_colorIdx" value="${s.colorIdx}">
+  </div>
+  <div class="ef"><label class="ef-label">AI 시스템 프롬프트</label><textarea class="sys-prompt-area" id="me_sysPrompt">${esc(s.systemPrompt||DEFAULT_SYS[s.template]||'')}</textarea></div>`;
+  document.getElementById('metaModalTitle').textContent=`${s.title} — 연재 정보 편집`;
+  document.getElementById('metaModalBody').innerHTML=h;
+  document.getElementById('metaModalSave').style.cssText=`border-color:${color.c};color:${color.c};`;
+  document.getElementById('metaModalSave').onclick=()=>saveMetaEdit(sid);
+  openModal('metaModal');
+}
+function selectColorMeta(idx){
+  document.getElementById('me_colorIdx').value=idx;
+  document.querySelectorAll('#metaModal .color-sw').forEach((b,i)=>b.classList.toggle('on',i===idx));
+}
+function saveMetaEdit(sid){
+  const s=getSeries(sid);
+  s.title=document.getElementById('me_title').value.trim()||s.title;
+  s.subtitle=document.getElementById('me_subtitle').value.trim();
+  s.schedule=document.getElementById('me_schedule').value.trim();
+  s.lengthGuide=document.getElementById('me_length').value.trim();
+  s.structure=document.getElementById('me_structure').value.trim();
+  s.colorIdx=parseInt(document.getElementById('me_colorIdx').value)||0;
+  s.systemPrompt=document.getElementById('me_sysPrompt').value.trim();
+  saveData();closeModal('metaModal');renderAll();
+}
+
+// ═══════════════════════════════════════════════════
+// CRUD — NEW SERIES WIZARD
+// ═══════════════════════════════════════════════════
+function openWizard(){
+  _wiz={step:1,colorIdx:3,template:'essay',seriesId:null};
+  wizRender();
+  openModal('wizardModal');
+}
+function wizRender(){
+  const s=_wiz.step;
+  const color=COLORS[_wiz.colorIdx%COLORS.length];
+  document.getElementById('wizPrev').style.display=s>1?'':'none';
+  document.getElementById('wizNext').textContent=s===3?'연재 만들기':'다음 →';
+  document.getElementById('wizNext').style.cssText=`border-color:${color.c};color:${color.c};`;
+
+  let h=`<div class="wiz-steps">`;
+  [1,2,3].forEach(i=>{
+    h+=`<div class="wiz-step-dot ${i<s?'done':i===s?'on':''}">${i<s?'✓':i}</div>`;
+    if(i<3) h+=`<div class="wiz-step-line"></div>`;
+  });
+  h+='</div>';
+
+  if(s===1){
+    h+=`<div class="wiz-section"><div class="wiz-section-title">기본 정보</div>
+      <div class="ef"><label class="ef-label">연재 제목 *</label><input id="w1_title" placeholder="예: 〈침묵의 언어〉" value="${esc(_wiz.title||'')}"></div>
+      <div class="ef"><label class="ef-label">부제</label><input id="w1_subtitle" placeholder="한 줄 소개" value="${esc(_wiz.subtitle||'')}"></div>
+      <div class="ef-row">
+        <div class="ef"><label class="ef-label">발행 요일</label><input id="w1_schedule" placeholder="예: 화요일" value="${esc(_wiz.schedule||'')}"></div>
+        <div class="ef"><label class="ef-label">목표 분량</label><input id="w1_length" placeholder="예: 1,500–2,000자" value="${esc(_wiz.lengthGuide||'')}"></div>
+      </div>
+      <div class="ef"><label class="ef-label">구조 흐름</label><input id="w1_structure" placeholder="예: 장면→질문→성찰→여운" value="${esc(_wiz.structure||'')}"></div>
+      <div class="ef"><label class="ef-label">색상</label>
+        <div class="color-picker">${COLORS.map((c,i)=>`<button type="button" class="color-sw ${i===_wiz.colorIdx?'on':''}" style="background:${c.c}" onclick="wizPickColor(${i})"></button>`).join('')}</div>
+      </div>
+    </div>`;
+  } else if(s===2){
+    h+=`<div class="wiz-section"><div class="wiz-section-title">에피소드 구조 선택</div>
+      <div class="tmpl-grid">`;
+    Object.entries(EP_TEMPLATES).forEach(([k,t])=>{
+      h+=`<div class="tmpl-card ${_wiz.template===k?'on':''}" onclick="wizPickTemplate('${k}')" style="--series-c:${color.c};--series-bg:${color.bg}"><div class="tmpl-card-title">${t.name}</div><div class="tmpl-card-desc">${t.desc}</div></div>`;
+    });
+    h+=`</div></div>
+    <div class="wiz-section"><div class="wiz-section-title">첫 번째 시즌 이름</div>
+      <div class="ef"><input id="w2_season" placeholder="예: 시즌 1 — " value="${esc(_wiz.firstSeason||'')}"></div>
+    </div>`;
+  } else {
+    const defSys=DEFAULT_SYS[_wiz.template]||DEFAULT_SYS.free;
+    h+=`<div class="wiz-section"><div class="wiz-section-title">AI 집필 시스템 프롬프트</div>
+      <div class="ef"><div class="ef-note">이 연재를 집필할 때 Claude에게 전달될 지시입니다. 편집 후 저장하거나 기본값을 사용하세요.</div></div>
+      <div class="ef"><textarea class="sys-prompt-area" id="w3_sys">${esc(_wiz.systemPrompt||defSys)}</textarea></div>
+    </div>`;
+  }
+  document.getElementById('wizardBody').innerHTML=h;
+}
+function wizPickColor(idx){_wiz.colorIdx=idx;wizRender();}
+function wizPickTemplate(k){_wiz.template=k;wizRender();}
+function wizPrev(){if(_wiz.step>1){_wiz.step--;wizRender();}}
+function wizNext(){
+  if(_wiz.step===1){
+    const title=document.getElementById('w1_title').value.trim();
+    if(!title){alert('연재 제목을 입력해주세요.');return;}
+    _wiz.title=title;_wiz.subtitle=document.getElementById('w1_subtitle').value.trim();
+    _wiz.schedule=document.getElementById('w1_schedule').value.trim();
+    _wiz.lengthGuide=document.getElementById('w1_length').value.trim();
+    _wiz.structure=document.getElementById('w1_structure').value.trim();
+    _wiz.step=2;wizRender();
+  } else if(_wiz.step===2){
+    _wiz.firstSeason=document.getElementById('w2_season').value.trim()||'시즌 1';
+    _wiz.step=3;wizRender();
+  } else {
+    _wiz.systemPrompt=document.getElementById('w3_sys').value.trim();
+    finishWizard();
+  }
+}
+function finishWizard(){
+  const sid=uid();
+  const newSeries={id:sid,title:_wiz.title,subtitle:_wiz.subtitle,schedule:_wiz.schedule,lengthGuide:_wiz.lengthGuide,structure:_wiz.structure,colorIdx:_wiz.colorIdx,template:_wiz.template,systemPrompt:_wiz.systemPrompt,seasons:[{id:uid(),title:_wiz.firstSeason,episodes:[]}]};
+  loadData().series.push(newSeries);
+  saveData();
+  _activeSeriesId=sid;
+  closeModal('wizardModal');
+  renderAll();
+}
+
+// ═══════════════════════════════════════════════════
+// CRUD — DELETE SERIES
+// ═══════════════════════════════════════════════════
+function deleteSeries(sid){
+  const data=loadData();
+  const s=data.series.find(s=>s.id===sid);
+  if(s) s.seasons.forEach(ss=>ss.episodes.forEach(e=>delArt(sid,e.id)));
+  data.series=data.series.filter(s=>s.id!==sid);
+  if(_activeSeriesId===sid) _activeSeriesId=data.series[0]?.id||null;
+  saveData();renderAll();closeSeriesMgmt();
+}
+
+// ═══════════════════════════════════════════════════
+// IMPORT / EXPORT
+// ═══════════════════════════════════════════════════
+function exportData(){
+  const data=loadData();
+  const arts={};
+  data.series.forEach(s=>{s.seasons.forEach(ss=>{ss.episodes.forEach(e=>{const t=getArt(s.id,e.id);if(t) arts[artKey(s.id,e.id)]=t;});});});
+  const blob=new Blob([JSON.stringify({data,articles:arts},null,2)],{type:'application/json'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`brunch_cms_${new Date().toISOString().slice(0,10)}.json`;a.click();
+}
+function importData(evt){
+  const file=evt.target.files[0];if(!file) return;
+  const reader=new FileReader();
+  reader.onload=e=>{
+    try{
+      const d=JSON.parse(e.target.result);
+      if(d.data&&d.data.series){
+        _data=d.data;saveData();
+        if(d.articles){Object.entries(d.articles).forEach(([k,v])=>{try{localStorage.setItem(k,v);}catch(e){}});}
+        _activeSeriesId=_data.series[0]?.id||null;
+        renderAll();alert('불러오기 완료!');
+      } else {alert('올바른 형식의 JSON 파일이 아닙니다.');}
+    }catch(err){alert('파일을 읽는 중 오류가 발생했습니다: '+err.message);}
+  };
+  reader.readAsText(file);evt.target.value='';
+}
+
+// ═══════════════════════════════════════════════════
+// DEFAULT DATA
+// ═══════════════════════════════════════════════════
+function getDefaultData(){return{series:[
+// ── SERIES 1 ──────────────────────────────────────────────
+{id:'s1',title:'우리가 선택한 신들',subtitle:'현대인의 우상을 해부하는 인문신학 에세이',schedule:'월요일',lengthGuide:'2,000–2,300자',structure:'장면→균열→전개→전환→여운',colorIdx:0,template:'essay',
+systemPrompt:`당신은 한국어 인문신학 브런치 에세이 작가입니다.\n\n문체 규칙:\n- 도입부: 김영하 스타일 — 일상의 구체적 장면에서 시작, 아이러니와 역설 활용\n- 전개: 김기석 스타일 — 시적이고 논리적, 담담하지만 온기\n- 마무리: 정호승 스타일 — 짧고 여운 있는 문장\n- "우리는", "우리가" 공동체 언어 우선\n- 문장 리듬: 짧은 단언 → 조금 긴 설명 → 다시 짧은 마무리\n- 단락 3줄 이내. 소제목·번호 목록·볼드체 금지. 설교 어투("~해야 합니다") 금지.\n- 결론 명확히 내리지 말 것 — 마지막은 질문이나 여운. 목표 분량: 2,000~2,300자`,
+seasons:[
+{id:'ss1_1',title:'시즌 1 — 성공·성취의 우상',episodes:[
+{id:'e1_1',title:'쉬면 왜 죄책감이 드는가',thesis:'안식이 게으름이 된 세상',opening:'연휴 첫날 오전, 아무 계획도 없이 누워 있다. 핸드폰을 들어 유튜브를 켜다가 멈춘다. 운동이라도 해야 하나, 책이라도 읽어야 하나.',crack:'쉬는 것이 왜 이토록 허락이 필요한 행위가 되었는가.',dev0:'성과주의 사회에서 쉬는 사람은 뒤처지는 사람이다. 경쟁 구조가 안식을 죄책감으로 전환시키는 방식.',dev1:'생산성이 삶의 기준이 된 역사 — 산업혁명 이후 노동 윤리가 도덕 언어를 차용한 결과.',dev2:'성경에서 안식은 명령이다. 하나님도 쉬셨다는 신학적 함의.',turn:'쉬지 못하는 것은 의지 문제가 아니라 신앙 문제다.',closing:'오늘 아무것도 하지 않아도 당신은 충분한가. 이 질문에 예스라고 못 한다면, 무엇이 당신의 신인가.',reference:'창세기 2:1-3 / 출애굽기 20:8-11 / 월터 브루그만 《안식》',caution:'설교조 금지. 독자가 "이게 내 얘기다"로 끝나야 함.'},
+{id:'e1_2',title:'스펙이라는 이름의 제물',thesis:'우리는 무엇을 증명하려 하는가',opening:'자기소개서를 쓰는 새벽 두 시. 나를 300자로 요약하는 것의 기묘한 굴욕감.',crack:'스펙을 쌓는다는 것은 나를 만들어가는 것인가, 나를 팔기 위해 포장하는 것인가.',dev0:'스펙 사회의 구조 — 끝없이 증명을 요구하는 시스템의 작동 원리.',dev1:'우상 제의와 스펙의 유사 구조 — 신에게 제물을 바치듯 시스템에 나를 바침.',dev2:'은혜는 증명을 요구하지 않는다. 행위로 얻는 의와 믿음으로 받는 의의 차이.',turn:'나를 증명해야만 받아들여지는 삶과, 이미 받아들여진 사람으로 사는 삶은 전혀 다르다.',closing:'당신은 스펙 없이도 사랑받을 수 있는가. 지금 이 순간, 그것을 믿는가.',reference:'에베소서 2:8-9 / 팀 켈러 《탕부 하나님》',caution:'스펙을 나쁘다고 단정하지 말 것.'},
+{id:'e1_3',title:'번아웃은 왜 성공한 사람에게 찾아오는가',thesis:'헌신이 신앙이 될 때 몸이 먼저 말한다',opening:'퇴사를 결심한 날 아침. 이불 밖으로 나올 수가 없다. 이상한 것은 누구보다 열심히 했다는 것이다.',crack:'왜 가장 열심히 한 사람이 가장 먼저 무너지는가.',dev0:'번아웃의 정의 — 단순 소진이 아니라 의미의 붕괴.',dev1:'자기 자신을 번제 제물로 드리는 구조 — 조직과 목표에 자신을 희생하는 헌신의 이면.',dev2:'일이 의미에서 우상으로 바뀌는 경계.',turn:'번아웃은 몸의 경고가 아니라 영혼의 경고다.',closing:'당신이 일을 잃었을 때 남는 것은 무엇인가.',reference:'열왕기상 19장 / 마태복음 11:28-30',caution:'번아웃을 영적 나약함으로 보는 시각 금지.'},
+{id:'e1_4',title:'비교가 신앙이 된 세상',thesis:'인스타그램이 성전이 된 이유',opening:'친구 집들이에서 돌아오는 길. 마음이 무겁다. 그 집이 나쁜 게 아닌데. 내 삶이 나쁜 게 아닌데.',crack:'비교는 인류 역사와 함께했지만, 지금은 왜 이렇게 파괴적인가.',dev0:'SNS 알고리즘이 비교를 연료로 삼는 구조.',dev1:'비교는 자신을 낮추는 행위가 아니라 타인을 심판하는 행위다.',dev2:'가인과 아벨의 이야기 — 비교에서 시작된 인류 최초의 살인.',turn:'비교를 멈추는 것은 의지력의 문제가 아니라 세계관의 전환이다.',closing:'당신은 당신 자신의 기준으로 살고 있는가.',reference:'창세기 4장 / 갈라디아서 6:4',caution:'SNS를 악으로 단정하지 말 것.'},
+{id:'e1_5',title:'공정이라는 새로운 복음',thesis:'공정에의 갈망은 정의인가, 복수인가',opening:'채용 취소 뉴스의 댓글 창. 분노의 언어들이 폭포처럼 쏟아진다.',crack:'공정을 외치는 사람들이 진짜 원하는 것은 무엇인가.',dev0:'공정 담론의 부상 — 불평등 사회에서 공정이 유일한 정의 언어가 된 이유.',dev1:'공정과 은혜는 근본적으로 충돌한다 — 공정한 세상에서 용서와 자비는 불가능하다.',dev2:'포도원 품꾼의 비유(마 20장) — 같은 임금을 주는 주인은 공정한가, 불공정한가.',turn:'공정이 신이 되면 용서가 사라진다.',closing:'당신이 가장 불공정하다고 느끼는 것은 무엇인가. 그 안에 어떤 욕망이 있는가.',reference:'마태복음 20:1-16 / 누가복음 1:51-53',caution:'공정에 대한 열망을 가볍게 보지 말 것.'},
+{id:'e1_6',title:'성취 없이도 존재할 수 있는가',thesis:'존재는 성취가 아니다',opening:'아무것도 이룬 것 없는 30대의 생일날 밤. 내가 가진 것들을 세어본다. 숫자가 너무 적다.',crack:'우리는 무언가를 해냈을 때만 비로소 살았다고 느끼는가.',dev0:'성취 중심 자아상의 구조 — 이력서가 정체성이 된 사람들.',dev1:'존재의 가치를 성취로 증명하려는 문화의 역사.',dev2:'스스로 있는 자(I AM) — 존재 자체가 가치인 하나님의 이름이 주는 함의.',turn:'당신의 가치는 당신이 무엇을 했는가에 있지 않다.',closing:'오늘 아무것도 하지 않은 하루를 살았어도 당신은 충분한가.',reference:'출애굽기 3:14 / 시편 46편',caution:'게으름 옹호로 읽히지 않도록 균형 잡기.'},
+{id:'e1_7',title:'자녀에게 원하는 것의 정체',thesis:'내 꿈인가, 내 불안인가',opening:'학원 주차장에서 기다리는 두 시간. 핸드폰을 보다가 문득 묻는다. 나는 왜 아이를 여기에 데려왔는가.',crack:'부모가 자녀에게 원하는 것은 진짜 누구를 위한 것인가.',dev0:'자녀를 통한 대리 성취의 심리 — 내가 못 이룬 것을 자녀에게 투영하는 구조.',dev1:'자녀를 제물로 드리는 현대적 형식.',dev2:'아브라함과 이삭 — 자녀는 내 소유가 아니라 맡겨진 존재라는 신학.',turn:'자녀를 사랑한다는 것과 자녀에게 투자한다는 것은 다르다.',closing:'당신 자녀가 진짜 원하는 것을 마지막으로 물어본 것이 언제인가.',reference:'창세기 22장 / 신명기 6:6-7',caution:'좋은 부모를 비판하는 것이 아님을 명확히.'},
+{id:'e1_8',title:'안식일은 왜 명령인가',thesis:'쉼은 선물이 아니라 저항이다',opening:'주말에도 이메일을 확인하는 손. 습관인지 불안인지 모르겠다.',crack:'안식일은 율법인가 자유인가. 쉬라는 명령이 왜 명령이어야 했는가.',dev0:'안식일의 역사 — 이집트에는 안식이 없었다. 노예제의 핵심은 쉬지 못하는 것.',dev1:'안식은 생산을 멈추는 정치적 행위 — 소비 자본주의와 안식일 명령의 충돌.',dev2:'끊임없이 생산과 소비를 부추기는 세상에서 쉬는 것의 신학적·사회적 의미.',turn:'안식일을 지킨다는 것은 세상의 문법을 거부한다는 선언이다.',closing:'당신은 쉴 수 있는가, 허락 없이.',reference:'출애굽기 20:8-11 / 월터 브루그만 《안식》 / 마가복음 2:27',caution:'안식일 준수를 율법주의로 끝내지 말 것.'}
+]},
+{id:'ss1_2',title:'시즌 2 — 관계·가족의 우상',episodes:[
+{id:'e2_1',title:'사랑받아야 산다는 착각',thesis:'인정욕구의 신학적 구조',opening:'카톡 읽씹. 답장이 오지 않는다. 열다섯 분이 지났다. 왜 이렇게 불안한가.',crack:'우리는 언제부터 사랑받는 것을 생존 조건으로 여기게 되었는가.',dev0:'인정욕구의 심리학 — 어린 시절 형성된 애착 방식이 성인의 관계 불안으로.',dev1:'인간 관계가 하나님의 자리를 대신할 때 — 한 사람에게 구원을 구하는 욕망.',dev2:'하나님의 사랑은 반응을 기다리지 않는다 — 먼저 사랑하시는 분의 신학.',turn:'우리가 그토록 인정을 원하는 이유는, 이미 받아들여졌다는 것을 아직 믿지 않기 때문이다.',closing:'당신은 사랑받지 않아도 괜찮은가. 그 대답이 당신의 신앙의 깊이다.',reference:'로마서 8:38-39 / 요한일서 4:19',caution:'인정욕구를 나쁜 것으로 단정하지 말 것.'},
+{id:'e2_2',title:'이 사람이 내 전부가 되었을 때',thesis:'관계 중독의 구조',opening:'연인과 다투고 혼자 방에 앉아 있다. 공허하다. 이상하게 공허하다.',crack:'한 사람이 내 전부가 되는 것은 아름다운가, 위험한가.',dev0:'낭만적 사랑 신화 — 소울메이트, 반쪽 찾기라는 문화적 환상.',dev1:'관계가 우상이 될 때 관계가 파괴된다 — 구원을 기대하는 관계의 압력.',dev2:'하나님만이 채울 수 있는 자리를 인간에게 요구할 때 생기는 일.',turn:'상대방을 우상으로 만드는 것은 사랑이 아니다.',closing:'당신은 그 사람 없이도 완전한 사람인가.',reference:'아우구스티누스 《고백록》 / 에리히 프롬 《사랑의 기술》',caution:'연인 관계를 폄하하지 말 것.'},
+{id:'e2_3',title:'거절당하는 것이 두려운 이유',thesis:'수치심의 신학',opening:'부탁을 하려다 하지 못했다. 거절당할까봐. 혼자 해결했다.',crack:'거절이 이토록 무서운 것은 거절이 단순히 요청의 거절이 아니라 나 자신의 거절처럼 느껴지기 때문이다.',dev0:'수치심과 죄책감의 차이 — "내가 나쁜 행동을 했다"와 "나는 나쁜 사람이다".',dev1:'거절이 존재의 부정으로 느껴지는 심리 구조.',dev2:'하나님은 거절하지 않는다.',turn:'거절을 두려워하지 않으려면, 자신의 가치가 타인의 반응에 달려 있지 않다는 것을 알아야 한다.',closing:'당신이 거절당해도 당신은 여전히 당신인가.',reference:'시편 22편 / 로마서 8:31-34 / 브레네 브라운 《수치심 권하는 사회》',caution:'거절 두려움을 심리 문제로만 다루지 말 것.'},
+{id:'e2_4',title:'외로움을 채울 수 없는 것들',thesis:'외로움은 결핍이 아니다',opening:'혼자 먹는 점심, 유튜브를 켜놓는다. 소리가 있으면 덜 외로운가. 그렇지 않다.',crack:'외로움을 채우려는 모든 시도가 왜 결국 실패하는가.',dev0:'현대인의 외로움 — 역설적으로 가장 연결된 시대에 가장 고립된 이유.',dev1:'외로움을 채우려는 것들이 왜 채워지지 않는가.',dev2:'어거스틴의 고백 — 우리 마음이 주 안에서 쉬기까지 쉬지 못한다.',turn:'외로움을 채우려 하지 말고, 외로움과 함께 앉아라.',closing:'당신의 외로움은 무엇을 가리키고 있는가.',reference:'시편 63편 / 아우구스티누스 《고백록》',caution:'외로움을 해결해주려는 충동 억제.'}
+]},
+{id:'ss1_3',title:'시즌 3 — 안전·통제의 우상',episodes:[
+{id:'e3_1',title:'우리는 왜 미래를 통제하려 하는가',thesis:'불확실성을 견디지 못하는 이유',opening:'일요일 밤, 다음 주 계획을 다시 짠다. 이미 짜놨는데. 또 짠다.',crack:'계획이 안심인가, 불안인가.',dev0:'불확실성 회피의 심리학.',dev1:'통제욕이 우상이 되는 방식 — 내 계획 안에 하나님이 없는 삶.',dev2:'마태복음 6:25-34 — "내일 일을 위해 염려하지 말라"의 신학.',turn:'통제는 불안을 해결하지 않는다. 불안을 미래로 연장할 뿐이다.',closing:'당신이 통제할 수 없는 것과 함께 살 수 있는가.',reference:'마태복음 6:25-34 / 잠언 16:9',caution:'계획하는 것 자체를 나쁘다고 말하지 말 것.'},
+{id:'e3_2',title:'돈이 주는 안심의 정체',thesis:'재정 안전과 영적 안전은 다르다',opening:'새벽 세 시, 통장 잔액을 확인한다. 낮에도 봤는데.',crack:'얼마가 있으면 안심이 되는가. 그 숫자는 왜 계속 올라가는가.',dev0:'재정 불안의 구조 — 불안이 돈 부족 때문인가, 다른 무언가 때문인가.',dev1:'맘몬 — 예수님이 돈을 신과 같은 반열에 놓은 이유.',dev2:'물질적 안전과 영적 안전의 근본적 차이.',turn:'돈이 안심을 주지 않는 이유는 돈은 안심을 줄 자리가 아니기 때문이다.',closing:'당신이 돈 없이도 안심할 수 있는 근거는 무엇인가.',reference:'마태복음 6:24 / 누가복음 12:13-21 / 팀 켈러 《가짜 신들》',caution:'부를 죄악시하지 말 것.'},
+{id:'e3_3',title:'불안 없이 살 수 없다면',thesis:'불안과 함께 사는 신앙',opening:'아무 이유 없이 불안하다. 오늘 아침.',crack:'불안은 제거해야 하는가, 아니면 함께 살아야 하는가.',dev0:'만성 불안의 시대 — 구조적 원인.',dev1:'불안 제거 산업의 한계.',dev2:'불안이 신앙의 초대장이 될 때 — 빌립보서 4:6-7.',turn:'불안을 없애려 하지 말고, 불안 속에서 무엇을 찾고 있는지 물어라.',closing:'당신의 불안은 무엇을 가리키고 있는가.',reference:'빌립보서 4:6-7 / 키르케고르 《불안의 개념》',caution:'불안을 영적 문제로만 다루지 말 것.'}
+]},
+{id:'ss1_4',title:'시즌 4 — 자아·감정의 우상',episodes:[
+{id:'e4_1',title:'자기실현이라는 새로운 신화',thesis:'나를 찾는 것이 삶의 목적이 된 세상',opening:'MBTI 결과를 본다. INFJ. "맞아, 이게 나야." 그런데 정말 그것이 나인가.',crack:'자기실현은 언제부터 삶의 목적이 되었는가.',dev0:'자기실현 담론의 계보 — 매슬로우에서 자기계발 산업까지.',dev1:'자아를 발견해야 한다는 압박이 만드는 새로운 불안.',dev2:'기독교 신앙에서 자아의 위치 — 나를 잃는 것이 나를 찾는 것.',turn:'자아를 실현하는 삶과 부르심에 응답하는 삶은 다르다.',closing:'당신은 누구인가. 그리고 그것을 누가 말해주는가.',reference:'마태복음 16:25 / 찰스 테일러 《자아의 원천》',caution:'자기계발을 악으로 단정하지 말 것.'},
+{id:'e4_2',title:'감정이 진실이 된 세상',thesis:'감정주의의 신학적 문제',opening:'"느껴지는 게 진짜야." 우리는 이 말을 언제부터 믿게 되었는가.',crack:'감정이 진실이라면, 다른 감정을 느끼는 사람은 다른 진실을 사는 것인가.',dev0:'감정주의의 부상 — 진정성 문화와 감정의 권위화.',dev1:'감정이 진리보다 우선될 때 생기는 문제.',dev2:'기독교 신앙에서 감정의 위치 — 감정은 나침반이 아니라 신호다.',turn:'감정은 무시해야 하는 것이 아니다. 그러나 감정이 진실의 기준이 되어선 안 된다.',closing:'당신이 느끼는 것이 진실이라면, 느끼지 않는 것은 거짓인가.',reference:'예레미야 17:9 / 조나단 하이트 《바른 마음》',caution:'감정을 억압하는 것을 권장하지 말 것.'},
+{id:'e4_3',title:'나는 누구인가, 그것이 중요한가',thesis:'정체성의 신학적 기초',opening:'나는 누구인가. 이 질문 앞에 서면 막막하다.',crack:'정체성이 이토록 중요한 문제가 된 것은 언제부터인가.',dev0:'정체성 불안의 현대적 구조.',dev1:'정체성을 스스로 정의해야 한다는 근대적 압박.',dev2:'기독교 신앙에서 정체성의 기초 — 나는 창조되고 구원받고 부름받은 존재.',turn:'당신이 누구인가를 당신 스스로 결정해야 한다는 것은 엄청난 짐이다.',closing:'당신의 정체성의 근거는 무엇인가. 그것은 흔들릴 수 있는가.',reference:'갈라디아서 2:20 / 찰스 테일러 《자아의 원천》',caution:'정체성 논쟁을 특정 정치적 관점으로 끌지 말 것.'}
+]}
+]},
+// ── SERIES 2 ──────────────────────────────────────────────
+{id:'s2',title:'고전문학과 현대인들',subtitle:'위기의 시대, 오래된 텍스트가 먼저 알고 있었다',schedule:'수요일',lengthGuide:'1,800–2,000자',structure:'고전→번역→성찰→질문',colorIdx:1,template:'classic',
+systemPrompt:`당신은 한국어 인문 에세이 작가입니다. 고전 문학 텍스트를 현대 독자의 삶에 연결합니다.\n\n문체 규칙:\n- 김기석 스타일 주도 — 시적이고 깊이 있는 산문, 침착하고 온기가 서려 있음\n- 마무리: 정호승 스타일 — 짧고 조용한 여운\n- 독자 옆에 앉아 함께 읽어주는 목소리 (학자처럼 해설 금지)\n- "X는 ~라고 말했다" 식 해설 금지\n- 소제목·번호 목록 금지\n- 목표 분량: 1,800~2,000자`,
+seasons:[
+{id:'ss2_1',title:'시즌 1 — 외로움편',episodes:[
+{id:'e5_1',title:'어느 날 아침 나는 쓸모없어졌다',thesis:'카프카 〈변신〉 — 기능을 잃으면 존재도 잃는 사회',classic:'그레고르 잠자는 어느 날 아침 거대한 해충으로 변해 있다. 가족은 처음엔 당황하고, 이내 짐이 된 그를 외면하기 시작한다.',translation:'구조조정 통보를 받은 아침. 갑자기 나는 이 조직에서 존재하지 않는 사람이 된다.',reflection:'기능을 잃으면 존재를 잃는 사회 — 우리는 쓸모있는 동안만 사랑받는가.',question:'당신이 지금의 역할을 잃는다면 당신은 여전히 당신인가.',reference:'카프카 《변신》 / 한나 아렌트 《인간의 조건》',caution:'번역을 과하게 하지 말 것. 고전 텍스트가 현대 장면보다 먼저 숨쉬어야 함.'},
+{id:'e5_2',title:'부끄럽다는 것이 무슨 뜻인지 몰랐다',thesis:'윤동주 〈자화상〉 — 자기혐오의 시대',classic:'우물 속 자화상을 바라보는 시인. 미워하다가, 그리워하다가, 돌아서서 가버린다.',translation:'SNS에서 자신과 타인을 비교하는 사람. 내가 나를 싫어하는 이유를 찾는 사람.',reflection:'부끄러움은 자기 인식의 시작이다. 그러나 자기혐오와 부끄러움은 다르다.',question:'당신은 자신을 바라볼 수 있는가. 그 시선이 따뜻한가.',reference:'윤동주 《하늘과 바람과 별과 시》 / 브레네 브라운',caution:'시를 해설하는 데 그치지 말 것.'},
+{id:'e5_3',title:'군중 속에서 혼자인 사람의 언어',thesis:'카뮈 〈이방인〉 — 연결되어 있지만 고립된 존재',classic:'뫼르소는 어머니의 장례식에서도 울지 않는다. 군중 안에 있지만 항상 밖에 있다.',translation:'명절 가족 모임에서 혼자인 사람. 친구들과 함께 있지만 외로운 사람.',reflection:'이방인은 악인인가, 아니면 가장 정직한 사람인가.',question:'당신은 군중 속에서 혼자인 적이 있는가. 그 감각을 어떻게 불렀는가.',reference:'카뮈 《이방인》',caution:'카뮈의 허무주의를 긍정하지도 부정하지도 말 것.'},
+{id:'e5_4',title:'고통 속에서도 혼자가 아닌 이유',thesis:'함석헌 〈뜻으로 본 한국역사〉 — 외로움의 반전',classic:'"고난은 우연이 아니다. 역사는 고통을 통해 자신을 드러낸다." 함석헌은 한국의 수난을 섭리의 언어로 읽는다.',translation:'혼자라고 느끼는 사람. 내 고통이 의미 없다고 느끼는 사람.',reflection:'외로움은 단절의 증거인가, 아니면 연대의 시작인가.',question:'당신의 외로움은 당신을 어디로 데려가고 있는가.',reference:'함석헌 《뜻으로 본 한국역사》 / 시편 22편',caution:'고통을 낭만화하지 말 것.'}
+]},
+{id:'ss2_2',title:'시즌 2 — 욕망편',episodes:[
+{id:'e6_1',title:'나폴레옹이 되고 싶었던 대학생',thesis:'도스토예프스키 〈죄와 벌〉 — 위대한 인간의 환상',classic:'라스콜리니코프는 자신이 나폴레옹 같은 비범한 인간이라 믿는다. 그 믿음이 살인으로 이어진다.',translation:'성공을 위해 선을 넘는 현대인. 목적이 수단을 정당화한다고 믿는 사람.',reflection:'나폴레옹 콤플렉스는 사라지지 않았다. 형태가 바뀌었을 뿐이다.',question:'당신은 어떤 상황에서 규칙이 자신에게는 적용되지 않는다고 느끼는가.',reference:'도스토예프스키 《죄와 벌》',caution:'범죄 이야기로 가지 말 것. 욕망의 구조에 집중.'},
+{id:'e6_2',title:'사탄은 왜 비교를 멈추지 못했나',thesis:'밀턴 〈실낙원〉 — 비교에서 시작된 추락',classic:'"차라리 지옥에서 군림하겠다. 천국에서 섬기느니." 사탄은 하나님과 자신을 비교하다 스스로 지옥을 만든다.',translation:'승진 누락 후 조직에 등 돌린 사람. 타인의 성공이 자신의 실패처럼 느껴지는 사람.',reflection:'비교는 지옥을 만든다. 그리고 그 지옥은 스스로 선택한 것이다.',question:'당신이 비교할 때 진짜 원하는 것은 무엇인가.',reference:'밀턴 《실낙원》 / 이사야 14:12-15',caution:'밀턴의 사탄을 너무 매력적으로 그리지 말 것.'},
+{id:'e6_3',title:'모든 것을 가진 사람의 고백',thesis:'전도서 — 성취 후 공허함의 신학',classic:'"헛되고 헛되도다, 모든 것이 헛되도다." 전도자는 지혜, 부, 쾌락, 명예를 다 가졌다. 그리고 모두 헛되다고 말한다.',translation:'성공한 40대의 공허함. 원하던 것을 다 이뤘는데 행복하지 않은 사람.',reflection:'전도서는 허무주의가 아니다. 그것은 가장 솔직한 삶의 고백이다.',question:'당신이 원하는 것을 모두 가졌을 때 당신은 행복할 것인가.',reference:'전도서 1-2장 / 팀 켈러 《탕부 하나님》',caution:'전도서를 허무주의로 읽지 말 것.'},
+{id:'e6_4',title:'사랑이 관용이 된다는 것',thesis:'고린도전서 13장 — 낭만 없는 사랑의 진짜 얼굴',classic:'"사랑은 오래 참고, 사랑은 온유하며…" 이 구절은 결혼식에서 읽힌다. 그러나 이것이 낭만의 언어인가.',translation:'오래된 부부. 지루한 일상 속의 사랑. 감정이 사라진 후에도 남는 것.',reflection:'고린도전서 13장은 감정이 아니라 의지의 언어다.',question:'당신의 사랑은 감정인가 의지인가.',reference:'고린도전서 13장 / C.S. 루이스 《네 가지 사랑》',caution:'낭만을 완전히 부정하지 말 것.'}
+]}
+]},
+// ── SERIES 3 ──────────────────────────────────────────────
+{id:'s3',title:'어른을 위한 하루 하나 시사칼럼',subtitle:'한 이슈, 하나의 렌즈, 하나의 질문',schedule:'금요일',lengthGuide:'1,000–1,200자',structure:'역설→명명→렌즈→강한 문장',colorIdx:2,template:'column',
+systemPrompt:`당신은 한국어 시사 칼럼니스트입니다. 목사이자 인문학자의 시선으로 사회 이슈를 읽습니다.\n\n문체 규칙:\n- 김영하 스타일 주도 — 예리하고 빠르며 아이러니 활용\n- 진보도 보수도 아닌 인간학적·신학적 제3의 시선\n- 특정 정당명·정치인 이름 사용 절대 금지\n- "~해야 한다"로 끝나는 처방 금지\n- 마지막 문장은 짧고 강하게, 공유하고 싶은 문장으로\n- 소제목·목록 금지\n- 목표 분량: 1,000~1,200자`,
+seasons:[
+{id:'ss3_1',title:'A. 노동과 삶',episodes:[
+{id:'e7_1',title:'52시간이 해결하지 못한 것',opener:'52시간 근무제가 시행되었다. 그런데 왜 우리는 더 지쳐 있는가.',naming:'문제는 시간이 아니라 의미다. 일하는 시간을 줄였지만 일의 의미를 묻지 않았다.',lens:'노동은 무엇인가 — 생계인가, 소명인가. 52시간으로 구할 수 없는 것.',closing:'우리에게 필요한 것은 덜 일하는 것이 아니라 왜 일하는지를 아는 것이다.',reference:'창세기 2:15 / 마르크스의 소외 개념',caution:'노동법 논쟁으로 가지 말 것.'},
+{id:'e7_2',title:'번아웃이 개인 문제가 된 이유',opener:'번아웃은 왜 항상 개인의 회복력 문제로 귀결되는가.',naming:'번아웃을 개인화하면 구조는 책임을 피한다.',lens:'명상과 상담이 번아웃을 해결하지 못하는 이유. 구조적 소진은 개인적 회복으로 치유되지 않는다.',closing:'번아웃은 개인이 약한 것이 아니다. 구조가 사람을 소진시키는 것이다.',reference:'WHO 번아웃 정의',caution:'자기 관리를 전혀 부정하지는 말 것.'},
+{id:'e7_3',title:'워라밸이 슬로건이 된 사회',opener:'"워라밸"을 말하는 조직이 야근을 요구한다.',naming:'슬로건과 현실의 간격이 이렇게 클 때, 그 슬로건은 도구가 된다.',lens:'워라밸은 왜 개인의 선택 문제가 되었는가.',closing:'워라밸은 선택이 아니라 권리다.',reference:'ILO 노동 기준',caution:'균형에 대한 개인적 노력을 무시하지 말 것.'}
+]},
+{id:'ss3_2',title:'B. 가족과 관계',episodes:[
+{id:'e8_1',title:'저출생 대책이 계속 실패하는 이유',opener:'수백조를 썼다. 출생률은 계속 떨어진다.',naming:'아이를 낳지 않는 것은 국가에 대한 저항이 아니다. 삶을 지속하기 어렵다는 신호다.',lens:'경제적 지원으로 해결되지 않는 이유 — 의미의 문제, 미래에 대한 신뢰의 문제.',closing:'사람들이 아이를 낳고 싶어지려면 이 세상이 살 만하다는 믿음이 먼저 회복되어야 한다.',reference:'한나 아렌트의 탄생성 개념',caution:'저출생을 정치적 논쟁으로 끌고 가지 말 것.'},
+{id:'e8_2',title:'명절이 두려운 사람들',opener:'명절이 다가온다. 기쁜 사람보다 두려운 사람이 더 많다.',naming:'명절은 가족의 축제다. 그러나 가족이 상처의 공간이기도 할 때.',lens:'명절 불안의 구조 — 비교, 기대, 묻지 말아야 할 질문들.',closing:'좋은 가족은 서로를 환대하는 가족이다. 환대란 있는 그대로를 받아들이는 것이다.',reference:'창세기 33장 / 앙리 누웬의 환대 개념',caution:'명절을 완전히 부정하지 말 것.'}
+]},
+{id:'ss3_3',title:'C. 정치와 언어',episodes:[
+{id:'e9_1',title:'공정이라는 말이 무기가 될 때',opener:'"그건 공정하지 않다"는 말이 가장 강력한 도덕 언어가 되었다.',naming:'공정이 절대 가치가 될 때, 자비와 용서는 불공정이 된다.',lens:'공정의 한계 — 공정한 세상에서 은혜는 없다.',closing:'공정은 중요하다. 그러나 공정이 전부라면 우리 중 누구도 살아남지 못한다.',reference:'마태복음 20:1-16 / 존 롤스',caution:'공정 담론 자체를 부정하지 말 것.'},
+{id:'e9_2',title:'진영이 생각을 대신하는 세상',opener:'그 사람이 어느 진영인지 알면 그 사람이 무슨 생각을 하는지 안다고 느낀다.',naming:'진영이 생각을 대신하는 세상.',lens:'확증 편향과 진영 논리의 구조.',closing:'생각한다는 것은 내 진영이 틀릴 수 있다는 가능성을 열어두는 것이다.',reference:'한나 아렌트의 사유론 / 조나단 하이트 《바른 마음》',caution:'특정 진영을 비판하지 말 것.'}
+]},
+{id:'ss3_4',title:'D. 교육과 세대',episodes:[
+{id:'e10_1',title:'대학이 계층 이동의 사다리가 아닌 세상',opener:'대학을 가도 계층이 바뀌지 않는다. 우리는 왜 여전히 대학에 매달리는가.',naming:'신앙이 된 학벌. 효과가 없어도 포기할 수 없는 이유.',lens:'교육이 계층 재생산의 도구가 된 방식.',closing:'교육의 목적은 무엇인가. 취업인가, 시민인가, 인간인가.',reference:'부르디외 《재생산》 / 마이클 샌들 《공정하다는 착각》',caution:'SKY 대학만을 대상으로 하지 말 것.'},
+{id:'e10_2',title:'어른이 없는 사회',opener:'우리 사회에 어른이 없다는 말을 자주 한다. 어른은 어디로 갔는가.',naming:'어른이 없는 것이 아니라 어른의 언어가 사라진 것이다.',lens:'어른이란 무엇인가 — 나이 많은 사람인가, 책임을 지는 사람인가.',closing:'어른이 되는 것은 더 많이 가지는 것이 아니라 더 많이 책임지는 것이다.',reference:'에릭 에릭슨의 발달론',caution:'세대를 비교하며 우열을 가리지 말 것.'}
+]},
+{id:'ss3_5',title:'E. 종교와 공공성',episodes:[
+{id:'e11_1',title:'교회가 정치를 말하면 안 되는가',opener:'"교회는 정치를 말하면 안 된다." 이 말이 누구에게 유리한가.',naming:'침묵도 정치적 행위다. 교회의 침묵은 어떤 세계를 지지하는 것인가.',lens:'예언자적 전통 — 아모스, 미가, 세례 요한.',closing:'교회가 정치를 말할 때 조심할 것은 말하는 것 자체가 아니라 누구 편에서 말하는가다.',reference:'월터 브루그만 《예언자적 상상력》 / 아모스 5장',caution:'특정 정치 입장을 취하지 말 것.'},
+{id:'e11_2',title:'종교가 위로가 되지 못할 때',opener:'교회에 갔는데 오히려 더 상처받고 나왔다.',naming:'위로를 찾아 간 곳에서 상처를 받는 역설.',lens:'위로의 신학 — 진짜 위로는 무엇인가.',closing:'위로는 답을 주는 것이 아니라 함께 앉는 것이다.',reference:'욥기 / 헨리 나우웬 《상처 입은 치유자》',caution:'교회 자체를 단죄하지 말 것.'}
+]},
+{id:'ss3_6',title:'F. 기술과 인간',episodes:[
+{id:'e12_1',title:'AI가 쓴 글을 읽어야 하는 우리',opener:'이 글은 AI가 썼는가, 인간이 썼는가. 우리는 알 수 있는가. 알아야 하는가.',naming:'글쓰기는 생각하는 행위였다. AI가 글을 쓴다는 것은 무엇인가.',lens:'글쓰기의 신학 — 언어와 인간성의 관계.',closing:'AI가 글을 쓸 수 있다는 것은 우리에게 글쓰기가 무엇인지 다시 묻게 한다.',reference:'요한복음 1:1 / 한나 아렌트의 행위론',caution:'AI 비판 일변도가 되지 말 것.'},
+{id:'e12_2',title:'알고리즘이 우리의 분노를 먹고 자란다',opener:'같은 영상을 보는데 댓글 분위기가 전혀 다른 이유.',naming:'알고리즘은 중립이 아니다. 분노, 혐오, 극단이 더 잘 퍼진다.',lens:'기술이 인간의 최악을 증폭하는 구조.',closing:'분노는 자연스럽다. 그러나 분노를 먹고 자라는 시스템에 우리가 먹이를 주고 있다.',reference:'트리스탄 해리스 《소셜 딜레마》 / 야고보서 1:20',caution:'알고리즘 음모론으로 가지 말 것.'}
+]}
+]}
+]};}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+(function init(){
+  _data=loadData();
+  if(_apiKey) document.getElementById('apiDot').style.background='#5a9c8a';
+  renderAll();
+  // Close overlays on backdrop click
+  document.getElementById('editModal').addEventListener('click',e=>{if(e.target===document.getElementById('editModal')) closeModal('editModal');});
+  document.getElementById('wizardModal').addEventListener('click',e=>{if(e.target===document.getElementById('wizardModal')) closeModal('wizardModal');});
+  document.getElementById('metaModal').addEventListener('click',e=>{if(e.target===document.getElementById('metaModal')) closeModal('metaModal');});
+  document.getElementById('seriesMgmt').addEventListener('click',e=>{if(e.target===document.getElementById('seriesMgmt')) closeSeriesMgmt();});
+})();
+</script>
+</body>
+</html>
