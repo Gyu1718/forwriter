@@ -1,0 +1,2 @@
+book_id,title_ko,title_original,author,translator,publisher,published_year,edition,language,source_type,source_file,isbn,priority,notes
+sample_book,샘플 도서,Sample Book,Author Name,,, , ,ko,epub,private_sources/sample_book.epub,,normal,실제 작업 전 샘플 행입니다.
