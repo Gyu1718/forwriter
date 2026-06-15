@@ -20,8 +20,11 @@ docs/
   workflow.md
   schema.md
   citation_policy.md
+  book_intake.md
 
 data/
+  intake/
+    books_to_process.csv
   books_index.json
   books/
     sample_book.json
@@ -30,6 +33,10 @@ data/
   topics/
     sample_topic.json
 
+scripts/
+  generate_book_records.py
+  validate_library.py
+
 private_sources/
   .gitkeep
 ```
@@ -37,13 +44,22 @@ private_sources/
 ## 처리 흐름
 
 1. `private_sources/`에 로컬 원문 파일을 둡니다.
-2. `data/books_index.json`에 책 목록과 처리 상태를 기록합니다.
-3. 책별 메타데이터와 설명은 `data/books/{book_id}.json`에 저장합니다.
-4. 인용 후보는 `data/quotes/{book_id}.quotes.jsonl`에 저장합니다.
-5. 사람이 원문·페이지·문맥을 검수한 뒤 인용 상태를 `verified`로 변경합니다.
+2. `data/intake/books_to_process.csv`에 도서 목록을 입력합니다.
+3. `scripts/generate_book_records.py`로 책별 JSON 골격과 인덱스를 생성합니다.
+4. `scripts/validate_library.py`로 데이터 구조를 검증합니다.
+5. 이후 원문 추출, 장별 요약, 상세 설명, 인용 후보 생성으로 넘어갑니다.
+6. 사람이 원문·페이지·문맥을 검수한 뒤 인용 상태를 `verified`로 변경합니다.
+
+## 명령어
+
+```bash
+python scripts/generate_book_records.py
+python scripts/validate_library.py
+```
 
 ## 문서
 
 - [Workflow](docs/workflow.md)
 - [Schema](docs/schema.md)
 - [Citation Policy](docs/citation_policy.md)
+- [Book Intake Guide](docs/book_intake.md)
