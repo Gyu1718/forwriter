@@ -19,14 +19,14 @@ data/intake/books_to_process.csv
 | `book_id` | yes | 책 고유 ID. 영문 소문자, 숫자, 언더스코어 사용 권장 |
 | `title_ko` | yes | 한국어 제목 |
 | `title_original` | no | 원제 |
-| `author` | yes | 저자 |
+| `author` | yes | 저자. 아직 모르면 `확인 필요`로 둔다 |
 | `translator` | no | 역자 |
 | `publisher` | no | 출판사 |
 | `published_year` | no | 출판 연도 |
 | `edition` | no | 판본 정보 |
 | `language` | yes | `ko`, `en`, `de`, `el`, `he` 등 |
-| `source_type` | yes | `epub`, `pdf_text`, `pdf_scan`, `manual` |
-| `source_file` | yes | 로컬 원문 파일 경로. 예: `private_sources/book.epub` |
+| `source_type` | yes | `pending`, `epub`, `pdf_text`, `pdf_scan`, `manual` |
+| `source_file` | yes | 비공개 원문 위치. 예: `private_sources/book.epub`, `google_drive/private/book_id` |
 | `isbn` | no | ISBN |
 | `priority` | no | `high`, `normal`, `low` |
 | `notes` | no | 작업 메모 |
@@ -54,20 +54,34 @@ barth_church_dogmatics_1_1
 
 | source_type | meaning |
 | --- | --- |
+| `pending` | 아직 파일 형식이나 추출 방식을 확인하지 못함 |
 | `epub` | EPUB 파일. 장 구조 추출이 비교적 쉬움 |
 | `pdf_text` | 텍스트 선택이 가능한 PDF |
 | `pdf_scan` | 이미지 기반 스캔 PDF. OCR 필요 |
 | `manual` | 원문 자동 추출 없이 사람이 직접 입력 |
 
-## 6. 처리 순서
+## 6. source_file 입력 기준
+
+원문 파일 자체나 공개 공유 링크를 저장소에 남기지 않는다. 대신 비공개 위치를 가리키는 별칭만 기록한다.
+
+```txt
+private_sources/book.epub
+google_drive/private/book_id
+```
+
+Google Drive 원문을 사용할 때도 공개 URL은 저장하지 않는다.
+
+## 7. 처리 순서
 
 1. `books_to_process.csv`에 책 목록을 입력한다.
-2. `scripts/generate_book_records.py`를 실행한다.
-3. `data/books_index.json`과 `data/books/{book_id}.json`이 생성된다.
-4. `scripts/validate_library.py`로 기본 구조를 검사한다.
-5. 이후 원문 추출, 요약, 인용 후보 생성 작업으로 넘어간다.
+2. 파일 형식 확인 전에는 `source_type`을 `pending`으로 둔다.
+3. 드라이브에서 실제 파일 형식을 확인한 뒤 `epub`, `pdf_text`, `pdf_scan` 중 하나로 바꾼다.
+4. `scripts/generate_book_records.py`를 실행한다.
+5. `data/books_index.json`과 `data/books/{book_id}.json`이 생성된다.
+6. `scripts/validate_library.py`로 기본 구조를 검사한다.
+7. 이후 원문 추출, 요약, 인용 후보 생성 작업으로 넘어간다.
 
-## 7. 권장 시작 방식
+## 8. 권장 시작 방식
 
 처음에는 전체 목록을 한 번에 넣기보다 다음 세 유형을 먼저 넣는다.
 
