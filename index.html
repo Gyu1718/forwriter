@@ -105,6 +105,30 @@ mark{background:#F2D9A0;color:inherit;padding:0 1px;border-radius:2px}
 .backtop{margin-top:30px;font-size:.82rem;color:var(--gold)}
 .skip{position:absolute;left:-999px}
 .skip:focus{left:8px;top:8px;background:var(--ink);color:var(--paper);padding:8px 12px;border-radius:8px;z-index:9}
+/* full index home */
+.ipart{border-bottom:1px solid var(--line)}
+.ipart>summary{cursor:pointer;list-style:none;padding:14px 4px;font-size:.74rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--gold);font-weight:600;display:flex;align-items:center;gap:9px}
+.ipart>summary::-webkit-details-marker{display:none}
+.ipart>summary::before{content:"\25B8";color:var(--clay);font-size:.8rem;transition:transform .15s}
+.ipart[open]>summary::before{transform:rotate(90deg)}
+.ipart>summary:focus-visible{outline:2px solid var(--clay2);outline-offset:2px;border-radius:6px}
+.isec{padding:2px 0 16px 4px}
+.ihead{display:flex;align-items:center;gap:8px;font-size:1.02rem;font-weight:600;padding:6px 6px;border-radius:7px}
+.ihead:hover{background:var(--paper);color:var(--clay)}
+.ihead .n{font-size:.72rem;color:var(--gold);min-width:20px}
+.idots{display:inline-flex;gap:3px;margin-left:4px}
+.idots i{width:7px;height:7px;border-radius:50%;display:inline-block}
+.icards{list-style:none;margin:5px 0 0;padding:0 0 0 30px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:1px 16px}
+.icards a{display:block;font-family:var(--batang);font-size:.87rem;color:var(--ink2);padding:3px 8px;border-radius:6px;
+  border-left:1px solid var(--line)}
+.icards a:hover{color:var(--ink);background:var(--paper);border-left-color:var(--clay)}
+.card.target{box-shadow:0 0 0 2px var(--clay),var(--shadow)}
+@media(prefers-reduced-motion:no-preference){
+  .card.target{animation:flash 1.5s ease-out}
+  @keyframes flash{0%{box-shadow:0 0 0 4px var(--clay2),var(--shadow)}100%{box-shadow:0 0 0 2px var(--clay),var(--shadow)}}
+}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 </style>
 </head>
@@ -175,35 +199,38 @@ function renderNav(){
 function bookChips(keys,q){
   return `<div class="bookchips">`+keys.map(k=>`<a class="chip" href="#b/${k}"><span class="dot" style="background:${bg(k)}"></span>${hl(BK[k],q)}</a>`).join('')+`</div>`;
 }
-function cardHtml(s,c,q){
+function cardHtml(s,c,q,ci){
   const cc=bg(s.books[0]);
-  return `<div class="card" style="--cc:${cc}"><h3>${hl(c.h,q)}</h3><p>${hl(c.b,q)}</p></div>`;
+  const idAttr = (ci!==undefined&&ci!==null)?` id="c${ci}"`:'';
+  return `<div class="card"${idAttr} style="--cc:${cc}"><h3>${hl(c.h,q)}</h3><p>${hl(c.b,q)}</p></div>`;
 }
 
 function viewHome(){
-  current=null; renderNav();
+  current=null; if(mode==='book'){mode='topic';setModeBtns();} renderNav();
   const nCards=SEC.reduce((a,s)=>a+s.cards.length,0);
-  let h=`<div class="crumb">Writer's Reference</div>
-  <h1 class="t">작법서 핵심 원리 색인</h1>
-  <p class="lead">소설·스토리텔링·시나리오·웹소설·게임·문장론을 다룬 스무 권 남짓의 책에서 뽑은 원리를 한곳에 모았다. 위 검색창에 단어를 넣으면 모든 카드를 가로질러 찾고, 카드마다 어느 책에서 왔는지 색으로 표시된다.</p>
-  <div class="statbar"><div><b>${SEC.length}</b>주제</div><div><b>${nCards}</b>원리 카드</div><div><b>${bkeys.length}</b>권 출처</div><div><b>${DATA.parts.length}</b>분류</div></div>
-  <div class="parts">`;
+  let h=`<div class="crumb">Writer's Reference · 전체 색인</div>
+  <h1 class="t">작법 개념 색인</h1>
+  <p class="lead">작법서 스무 권 남짓에서 뽑은 ${nCards}개 원리를 한눈에 펼친 색인입니다. 주제 제목을 누르면 그 주제로, 아래 항목을 누르면 해당 원리 카드로 곧장 들어가 강조됩니다.</p>
+  <div class="statbar"><div><b>${SEC.length}</b>주제</div><div><b>${nCards}</b>원리 카드</div><div><b>${bkeys.length}</b>권 출처</div><div><b>${DATA.parts.length}</b>분류</div></div>`;
   DATA.parts.forEach((p,i)=>{
     const ss=SEC.filter(s=>s.part===p);
-    h+=`<div class="pcard"><div class="pn">PART ${i+1}</div><h3>${esc(p)}</h3>`;
-    ss.forEach(s=>{h+=`<a class="s" href="#s/${s.id}"><span class="n">${s.id}</span><span>${esc(s.title)}</span></a>`;});
-    h+=`</div>`;
+    h+=`<details class="ipart" open><summary>PART ${i+1} · ${esc(p)}</summary>`;
+    ss.forEach(s=>{
+      const dots=s.books.map(k=>`<i style="background:${bg(k)}" title="${esc(BK[k])}"></i>`).join('');
+      h+=`<div class="isec"><a class="ihead" href="#s/${s.id}"><span class="n">${s.id}</span><span>${esc(s.title)}</span><span class="idots">${dots}</span></a>`;
+      h+=`<ul class="icards">`+s.cards.map((c,ci)=>`<li><a href="#s/${s.id}/${ci}">${esc(c.h)}</a></li>`).join('')+`</ul></div>`;
+    });
+    h+=`</details>`;
   });
-  h+=`</div>`;
-  main.innerHTML=h; main.scrollTo?.(0,0); window.scrollTo(0,0);
+  main.innerHTML=h; window.scrollTo(0,0);
 }
 
-function viewSection(id){
+function viewSection(id,cardIdx){
   const s=byId[id]; if(!s){viewHome();return;}
   current=id; renderNav();
   let h=`<div class="crumb">${esc(s.part)} · ${s.id}</div><h1 class="t">${esc(s.title)}</h1>`;
   h+=bookChips(s.books,'');
-  h+=`<div class="cards">`+s.cards.map(c=>cardHtml(s,c,'')).join('')+`</div>`;
+  h+=`<div class="cards">`+s.cards.map((c,ci)=>cardHtml(s,c,'',ci)).join('')+`</div>`;
   if(s.quote){h+=`<div class="quote">“${esc(s.quote[0])}”<span class="who">— ${esc(s.quote[1])}</span></div>`;}
   if(s.related&&s.related.length){
     h+=`<div class="related"><div class="lbl">관련 주제 · 다른 책에서 같은 결</div><div class="relgrid">`;
@@ -211,7 +238,14 @@ function viewSection(id){
     h+=`</div></div>`;
   }
   h+=`<div class="backtop"><a href="#">← 전체 색인으로</a></div>`;
-  main.innerHTML=h; window.scrollTo(0,0);
+  main.innerHTML=h;
+  if(cardIdx!=null && !isNaN(cardIdx)){
+    const el=document.getElementById('c'+cardIdx);
+    if(el){const rm=matchMedia('(prefers-reduced-motion:reduce)').matches;
+      requestAnimationFrame(()=>{el.scrollIntoView({block:'center',behavior:rm?'auto':'smooth'});el.classList.add('target');setTimeout(()=>el.classList.remove('target'),1600);});
+      return;}
+  }
+  window.scrollTo(0,0);
 }
 
 function viewBook(k){
@@ -254,7 +288,11 @@ function setModeBtns(){
 
 function route(){
   const hsh=location.hash.slice(1);
-  if(hsh.startsWith('s/')){if(mode==='book'){mode='topic';setModeBtns();}viewSection(hsh.slice(2));}
+  if(hsh.startsWith('s/')){
+    if(mode==='book'){mode='topic';setModeBtns();}
+    const seg=hsh.slice(2).split('/');
+    viewSection(seg[0], seg[1]!==undefined?parseInt(seg[1],10):null);
+  }
   else if(hsh.startsWith('b/')){viewBook(hsh.slice(2));}
   else{if(mode==='book'){mode='topic';setModeBtns();}viewHome();}
 }
