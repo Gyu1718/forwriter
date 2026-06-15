@@ -73,6 +73,17 @@ h1.t{font-size:2rem;line-height:1.25;margin:0 0 6px;letter-spacing:-.015em}
 .card h3{margin:0 0 9px;font-size:1.02rem;line-height:1.4;letter-spacing:-.01em;padding-left:4px}
 .card p{margin:0;font-family:var(--batang);font-size:.92rem;line-height:1.72;color:#33302a;padding-left:4px}
 mark{background:#F2D9A0;color:inherit;padding:0 1px;border-radius:2px}
+.cdetail{margin-top:12px;padding-left:4px}
+.cdetail>summary{cursor:pointer;list-style:none;font-size:.78rem;letter-spacing:.04em;color:var(--clay);font-weight:600;display:inline-flex;align-items:center;gap:6px}
+.cdetail>summary::-webkit-details-marker{display:none}
+.cdetail>summary::before{content:"▸";font-size:.7rem;transition:transform .15s}
+.cdetail[open]>summary::before{transform:rotate(90deg)}
+.cdbody{margin-top:9px;padding-top:10px;border-top:1px dashed var(--line)}
+.cdtext{margin:0 0 8px;font-family:var(--batang);font-size:.9rem;line-height:1.72;color:#3a362e;padding-left:4px}
+.cdtext:last-child{margin-bottom:0}
+.cq{margin:10px 0 0 4px;padding:8px 12px;border-left:2px solid var(--clay2);background:var(--paper);font-family:var(--batang);font-size:.88rem;color:#33302a}
+.cq cite{display:block;margin-top:5px;font-family:var(--serif);font-style:normal;font-size:.74rem;color:var(--gold)}
+.csrc{margin-top:8px;padding-left:4px;font-size:.74rem;color:var(--gold)}
 
 .quote{margin:30px 0 6px;padding:20px 22px;border-left:3px solid var(--clay);background:var(--paper2);
   border-radius:0 12px 12px 0;font-family:var(--batang);font-size:1.02rem;line-height:1.8}
@@ -198,7 +209,15 @@ function bookChips(keys,q){
 function cardHtml(s,c,q,ci){
   const cc=bg(s.books[0]);
   const idAttr = (ci!==undefined&&ci!==null)?` id="c${ci}"`:'';
-  return `<div class="card"${idAttr} style="--cc:${cc}"><h3>${hl(c.h,q)}</h3><p>${hl(c.b,q)}</p></div>`;
+  let extra='';
+  if((c.detail&&c.detail.length)||c.q||c.src){
+    extra='<details class="cdetail"><summary>자세히</summary><div class="cdbody">';
+    if(c.detail&&c.detail.length) extra+=c.detail.map(p=>`<p class="cdtext">${hl(p,q)}</p>`).join('');
+    if(c.q) extra+=`<blockquote class="cq">“${hl(c.q,q)}”${c.src?`<cite>${esc(c.src)}</cite>`:''}</blockquote>`;
+    else if(c.src) extra+=`<div class="csrc">${esc(c.src)}</div>`;
+    extra+='</div></details>';
+  }
+  return `<div class="card"${idAttr} style="--cc:${cc}"><h3>${hl(c.h,q)}</h3><p>${hl(c.b,q)}</p>${extra}</div>`;
 }
 
 function viewHome(){
@@ -262,7 +281,8 @@ function viewSearch(q){
   const hits=[];
   SEC.forEach(s=>{
     s.cards.forEach(c=>{
-      if((c.h+' '+c.b).toLowerCase().includes(ql)||s.title.toLowerCase().includes(ql)||s.books.some(b=>BK[b].toLowerCase().includes(ql)))
+      const _d=(c.detail?c.detail.join(' '):'')+' '+(c.q||'')+' '+(c.src||'');
+      if((c.h+' '+c.b+' '+_d).toLowerCase().includes(ql)||s.title.toLowerCase().includes(ql)||s.books.some(b=>BK[b].toLowerCase().includes(ql)))
         hits.push({s,c});
     });
   });
