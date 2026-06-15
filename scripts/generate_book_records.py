@@ -22,7 +22,8 @@ INTAKE_CSV = ROOT / "data" / "intake" / "books_to_process.csv"
 BOOKS_DIR = ROOT / "data" / "books"
 BOOKS_INDEX = ROOT / "data" / "books_index.json"
 
-ALLOWED_SOURCE_TYPES = {"epub", "pdf_text", "pdf_scan", "manual"}
+ALLOWED_SOURCE_TYPES = {"pending", "epub", "pdf_text", "pdf_scan", "manual"}
+ALLOWED_SOURCE_PREFIXES = ("private_sources/", "google_drive/private/")
 ALLOWED_PRIORITIES = {"high", "normal", "low", ""}
 BOOK_ID_RE = re.compile(r"^[a-z0-9_]+$")
 
@@ -74,9 +75,9 @@ def validate_row(row: dict[str, str], row_number: int) -> list[str]:
 
     if not source_file:
         errors.append(f"row {row_number}: source_file is required")
-    elif not source_file.startswith("private_sources/"):
+    elif not source_file.startswith(ALLOWED_SOURCE_PREFIXES):
         errors.append(
-            f"row {row_number}: source_file should point to private_sources/: {source_file!r}"
+            f"row {row_number}: source_file should point to private_sources/ or google_drive/private/: {source_file!r}"
         )
 
     if priority not in ALLOWED_PRIORITIES:
