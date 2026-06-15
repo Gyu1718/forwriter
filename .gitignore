@@ -1,0 +1,23 @@
+# Private source files
+# Do not commit copyrighted or licensed book source files.
+private_sources/*
+!private_sources/.gitkeep
+
+# Extracted full text should stay local unless explicitly cleared for publication.
+*.epub
+*.pdf
+*.txt
+*.ocr.txt
+*.extract.txt
+
+# Local environment and caches
+.env
+.env.*
+__pycache__/
+*.pyc
+.DS_Store
+
+# Temporary processing output
+_tmp/
+out/
+exports/
