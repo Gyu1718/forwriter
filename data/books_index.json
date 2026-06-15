@@ -1,0 +1,14 @@
+[
+  {
+    "book_id": "sample_book",
+    "title_ko": "샘플 도서",
+    "title_original": "Sample Book",
+    "author": "Author Name",
+    "source_type": "epub",
+    "source_available": false,
+    "status": "not_started",
+    "review_status": "needs_human_review",
+    "priority": "normal",
+    "notes": "실제 작업 전 샘플 레코드입니다."
+  }
+]
