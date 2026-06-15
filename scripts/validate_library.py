@@ -30,7 +30,8 @@ ALLOWED_BOOK_STATUS = {
     "needs_revision",
 }
 ALLOWED_QUOTE_CONFIDENCE = {"candidate", "needs_check", "verified", "rejected"}
-ALLOWED_SOURCE_TYPES = {"epub", "pdf_text", "pdf_scan", "manual"}
+ALLOWED_SOURCE_TYPES = {"pending", "epub", "pdf_text", "pdf_scan", "manual"}
+ALLOWED_SOURCE_PREFIXES = ("private_sources/", "google_drive/private/")
 
 
 def load_json(path: Path) -> Any:
@@ -68,9 +69,9 @@ def validate_book_record(path: Path) -> list[str]:
     if data.get("status") not in ALLOWED_BOOK_STATUS:
         errors.append(f"{path.relative_to(ROOT)}: invalid status: {data.get('status')}")
 
-    source_file = data.get("source_file", "")
-    if source_file and not str(source_file).startswith("private_sources/"):
-        errors.append(f"{path.relative_to(ROOT)}: source_file should point to private_sources/")
+    source_file = str(data.get("source_file", ""))
+    if source_file and not source_file.startswith(ALLOWED_SOURCE_PREFIXES):
+        errors.append(f"{path.relative_to(ROOT)}: source_file should point to private_sources/ or google_drive/private/")
 
     if not isinstance(data.get("chapter_summary", []), list):
         errors.append(f"{path.relative_to(ROOT)}: chapter_summary must be a list")
