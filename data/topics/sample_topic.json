@@ -1,0 +1,13 @@
+{
+  "topic_id": "sample_topic",
+  "name_ko": "샘플 주제",
+  "name_en": "sample topic",
+  "description": "주제별로 책과 인용을 묶기 위한 샘플 레코드입니다.",
+  "related_topics": [],
+  "representative_books": [
+    "sample_book"
+  ],
+  "representative_quotes": [
+    "sample_book_q001"
+  ]
+}
