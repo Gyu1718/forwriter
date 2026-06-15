@@ -207,7 +207,7 @@ function bookChips(keys,q){
   return `<div class="bookchips">`+keys.map(k=>`<a class="chip" href="#b/${k}"><span class="dot" style="background:${bg(k)}"></span>${hl(BK[k],q)}</a>`).join('')+`</div>`;
 }
 function cardHtml(s,c,q,ci){
-  const cc=bg(s.books[0]);
+  const cc=bg(c.book||s.books[0]);
   const idAttr = (ci!==undefined&&ci!==null)?` id="c${ci}"`:'';
   let extra='';
   if((c.detail&&c.detail.length)||c.q||c.src){
@@ -290,7 +290,7 @@ function viewSearch(q){
   if(!hits.length){h+=`<p class="empty">일치하는 카드가 없습니다. 다른 단어로 찾아보세요. 예: 능동태, 시점, 갈등, 클리프행어, 퇴고.</p>`;}
   else{
     h+=`<div class="cards">`+hits.map(({s,c})=>{
-      const cc=bg(s.books[0]);
+      const cc=bg(c.book||s.books[0]);
       return `<a class="card" style="--cc:${cc};display:block" href="#s/${s.id}"><h3>${hl(c.h,q)}</h3><p>${hl(c.b,q)}</p><div style="margin-top:10px;padding-left:4px;font-size:.74rem;color:var(--gold)">${s.id} · ${esc(s.title)}</div></a>`;
     }).join('')+`</div>`;
   }
