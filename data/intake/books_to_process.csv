@@ -1,2 +1,4 @@
 book_id,title_ko,title_original,author,translator,publisher,published_year,edition,language,source_type,source_file,isbn,priority,notes
-sample_book,샘플 도서,Sample Book,Author Name,,, , ,ko,epub,private_sources/sample_book.epub,,normal,실제 작업 전 샘플 행입니다.
+first_sentence_to_ending,첫 문장부터 엔딩까지,,확인 필요,,,,ko,pending,google_drive/private/first_sentence_to_ending,,high,1차 실제 처리 대상; 사용자 표기 첫 문장부터 앤딩까지; 정확한 저자와 파일 형식 확인 필요
+munjang_ganghwa,문장강화,,확인 필요,,,,ko,pending,google_drive/private/munjang_ganghwa,,high,1차 실제 처리 대상; 정확한 저자와 파일 형식 확인 필요
+storytelling_bible,스토리텔링 바이블,,확인 필요,,,,ko,pending,google_drive/private/storytelling_bible,,high,1차 실제 처리 대상; 정확한 저자와 파일 형식 확인 필요
