@@ -23,8 +23,8 @@ data/books/{book_id}.json
   "published_year": "",
   "edition": "",
   "language": "ko",
-  "source_type": "epub",
-  "source_file": "private_sources/sample_book.epub",
+  "source_type": "pending",
+  "source_file": "google_drive/private/sample_book",
   "isbn": "",
   "status": "not_started",
   "short_description": "",
@@ -47,13 +47,22 @@ data/books/{book_id}.json
 | `book_id` | 파일명과 연결되는 고유 식별자. 영문 소문자, 숫자, 언더스코어 권장 |
 | `title_ko` | 한국어 제목 |
 | `title_original` | 원제 |
-| `source_type` | `epub`, `pdf_text`, `pdf_scan`, `manual` 중 하나 |
-| `source_file` | 로컬 원문 파일 경로. 공개 저장소에는 파일 자체를 올리지 않음 |
+| `source_type` | `pending`, `epub`, `pdf_text`, `pdf_scan`, `manual` 중 하나 |
+| `source_file` | 비공개 원문 위치 별칭. 공개 저장소에는 원문 파일이나 공유 URL을 올리지 않음 |
 | `short_description` | 목록용 2~3문장 소개 |
 | `detailed_description` | 책의 핵심 논지와 구조를 설명하는 상세 소개 |
 | `main_argument` | 책 전체의 중심 논지 |
 | `chapter_summary` | 장별 요약 배열 |
 | `recommended_use` | 설교, 칼럼, 연구, 에세이 등 활용 포인트 |
+
+### source_file convention
+
+공개 저장소에 실제 Google Drive 공유 링크를 기록하지 않는다. 다음과 같은 별칭만 사용한다.
+
+```txt
+private_sources/book.epub
+google_drive/private/book_id
+```
 
 ## 2. Chapter summary object
 
