@@ -1,0 +1,2 @@
+{"quote_id":"sample_book_q001","book_id":"sample_book","quote":"짧은 인용문을 여기에 입력합니다.","page":"12","location":"ch01","chapter":"1장","theme":["sample","writing"],"note":"이 인용이 어떤 글에 유용한지 설명합니다.","confidence":"needs_check","verified_by":"","created_at":"","updated_at":""}
+{"quote_id":"sample_book_q002","book_id":"sample_book","quote":"원문 대조 전에는 verified로 표시하지 않습니다.","page":"15","location":"ch01","chapter":"1장","theme":["citation_policy"],"note":"검수 상태 예시입니다.","confidence":"candidate","verified_by":"","created_at":"","updated_at":""}

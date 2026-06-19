@@ -1,0 +1,62 @@
+[
+  {
+    "book_id": "character_workshop",
+    "title_ko": "캐릭터 공작소",
+    "title_original": "Characters & Viewpoint",
+    "author": "Orson Scott Card",
+    "source_type": "manual",
+    "source_available": false,
+    "status": "quote_candidates_ready",
+    "review_status": "needs_human_review",
+    "priority": "high",
+    "notes": "uploaded text extract; 상세 설명과 인용 후보 생성 완료"
+  },
+  {
+    "book_id": "first_sentence_to_ending",
+    "title_ko": "첫 문장부터 엔딩까지",
+    "title_original": "Creator no tame no monogatari sosaku note",
+    "author": "히데시마 진",
+    "source_type": "manual",
+    "source_available": false,
+    "status": "quote_candidates_ready",
+    "review_status": "needs_human_review",
+    "priority": "high",
+    "notes": "uploaded text extract; 상세 설명과 인용 후보 생성 완료"
+  },
+  {
+    "book_id": "munjang_ganghwa",
+    "title_ko": "문장강화",
+    "title_original": "",
+    "author": "이태준",
+    "source_type": "manual",
+    "source_available": false,
+    "status": "quote_candidates_ready",
+    "review_status": "needs_human_review",
+    "priority": "high",
+    "notes": "uploaded text extract; 상세 설명과 인용 후보 생성 완료"
+  },
+  {
+    "book_id": "storytelling_bible",
+    "title_ko": "스토리텔링 바이블",
+    "title_original": "",
+    "author": "확인 필요",
+    "source_type": "pending",
+    "source_available": false,
+    "status": "not_started",
+    "review_status": "needs_human_review",
+    "priority": "normal",
+    "notes": "원문 파일 미업로드; 정확한 저자와 파일 형식 확인 필요"
+  },
+  {
+    "book_id": "sample_book",
+    "title_ko": "샘플 도서",
+    "title_original": "Sample Book",
+    "author": "Author Name",
+    "source_type": "epub",
+    "source_available": false,
+    "status": "not_started",
+    "review_status": "needs_human_review",
+    "priority": "normal",
+    "notes": "실제 작업 전 샘플 레코드입니다."
+  }
+]

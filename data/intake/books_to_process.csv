@@ -1,0 +1,5 @@
+book_id,title_ko,title_original,author,translator,publisher,published_year,edition,language,source_type,source_file,isbn,priority,notes
+first_sentence_to_ending,첫 문장부터 엔딩까지,Creator no tame no monogatari sosaku note,히데시마 진,윤은혜,삼호북스,,한국어판,ko,manual,private_sources/first_sentence_to_ending.txt,,high,uploaded text extract; 상세 설명과 인용 후보 생성 완료
+character_workshop,캐릭터 공작소,Characters & Viewpoint,Orson Scott Card,김지현,황금가지,,한국어판,ko,manual,private_sources/character_workshop.txt,,high,uploaded text extract; 상세 설명과 인용 후보 생성 완료
+munjang_ganghwa,문장강화,,이태준,,창비,,개정판,ko,manual,private_sources/munjang_ganghwa.txt,,high,uploaded text extract; 상세 설명과 인용 후보 생성 완료
+storytelling_bible,스토리텔링 바이블,,확인 필요,,,,ko,pending,google_drive/private/storytelling_bible,,normal,원문 파일 미업로드; 정확한 저자와 파일 형식 확인 필요
